@@ -130,9 +130,12 @@ Une fois configuré, votre volet apparaîtra comme `cover.volet_roulant` :
 
 ### Port USB
 
+**Configuration du port USB** :
 Le port USB est désormais **paramétrable** via variable d'environnement `RELAIS_USB_PORT`.
 
 **Par défaut** : `/dev/tty.usbserial-1110`
+
+📖 **[Guide complet de configuration du port USB →](CONFIGURATION_USB.md)**
 
 **Configuration en ligne de commande** :
 ```bash
