@@ -1,9 +1,11 @@
 import serial, time
+import os
 
 CANAL = {'montee': 1, 'descente': 2}
 DUREE_MAX = 40  # secondes — mets une marge au-dessus de ta course réelle mesurée
-USB = '/dev/tty.usbserial-1110'
-#USB = '/dev/ttyUSB0'
+
+# Port USB configurable via variable d'environnement
+USB = os.getenv('RELAIS_USB_PORT', '/dev/tty.usbserial-1110')
 
 port = serial.Serial(USB, 9600, timeout=1)
 
@@ -30,4 +32,6 @@ def arreter():
     stop_tout()
 
 
-bouger('descente', 10)
+if __name__ == '__main__':
+    # Test par défaut si exécuté directement
+    bouger('descente', 10)

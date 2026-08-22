@@ -89,16 +89,23 @@ python3 volet_arreter.py
 
 3. **Ajustez les paramètres** :
    - Modifiez les chemins absolus vers les scripts
+   - Le port USB est paramétrable via l'entité `input_text.volet_usb_port`
    - Ajustez la durée d'ouverture/fermeture selon votre volet
    - Personnalisez le nom et l'icône si souhaité
 
-4. **Redémarrez Home Assistant**
+4. **Configurez le port USB** :
+   - Via l'interface Home Assistant : Paramètres → Appareils et services → Entités
+   - Cherchez `input_text.volet_usb_port`
+   - Définissez votre port USB (ex: `/dev/ttyUSB0` pour Linux)
+
+5. **Redémarrez Home Assistant**
 
 ### Utilisation dans Home Assistant
 
 Une fois configuré, votre volet apparaîtra comme `cover.volet_roulant` :
 
 - **Interface** : Contrôle via l'interface graphique
+- **Configuration du port USB** : Modifiable via `input_text.volet_usb_port` sans redémarrage
 - **Services** :
   ```yaml
   # Ouvrir
@@ -123,7 +130,24 @@ Une fois configuré, votre volet apparaîtra comme `cover.volet_roulant` :
 
 ### Port USB
 
-Modifiez la variable `USB` dans `relais.py` selon votre système :
+Le port USB est désormais **paramétrable** via variable d'environnement `RELAIS_USB_PORT`.
+
+**Par défaut** : `/dev/tty.usbserial-1110`
+
+**Configuration en ligne de commande** :
+```bash
+# Définir temporairement
+export RELAIS_USB_PORT=/dev/ttyUSB0
+python3 volet_monter.py
+
+# Ou en une ligne
+RELAIS_USB_PORT=/dev/ttyUSB0 python3 volet_monter.py
+```
+
+**Configuration dans Home Assistant** :
+Le port est configurable via l'entité `input_text.volet_usb_port` (voir [homeassistant_config.yaml](homeassistant_config.yaml)).
+
+**Ports courants** :
 - **macOS** : `/dev/tty.usbserial-1110`
 - **Linux** : `/dev/ttyUSB0`
 - **Windows** : `COM3` (ou autre port COM)
@@ -156,6 +180,8 @@ relais/
 ├── volet_arreter.py             # Script pour arrêter le volet
 ├── homeassistant_config.yaml    # Configuration Home Assistant
 ├── install.sh                   # Script d'installation
+├── .env.example                 # Exemple de configuration du port USB
+├── .gitignore                   # Fichiers à ignorer par Git
 └── README.md                    # Cette documentation
 ```
 
