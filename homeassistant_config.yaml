@@ -1,0 +1,51 @@
+# Configuration Home Assistant pour Volet Roulant via Relais USB
+#
+# À ajouter dans votre configuration.yaml ou dans un fichier séparé
+# inclus via: cover: !include covers.yaml
+
+# ÉTAPE 1: Définir les commandes shell
+shell_command:
+  volet_monter: "/opt/homebrew/bin/python3 /Users/zunix/Src/relais/volet_monter.py {{ duree|default(30) }}"
+  volet_descendre: "/opt/homebrew/bin/python3 /Users/zunix/Src/relais/volet_descendre.py {{ duree|default(30) }}"
+  volet_arreter: "/opt/homebrew/bin/python3 /Users/zunix/Src/relais/volet_arreter.py"
+
+# ÉTAPE 2: Définir le cover (volet roulant)
+cover:
+  - platform: template
+    covers:
+      volet_roulant:
+        device_class: shutter
+        friendly_name: "Volet Roulant"
+        
+        # Commande pour ouvrir (monter)
+        open_cover:
+          service: shell_command.volet_monter
+          data:
+            duree: 30  # Ajuster selon votre volet
+        
+        # Commande pour fermer (descendre)
+        close_cover:
+          service: shell_command.volet_descendre
+          data:
+            duree: 30  # Ajuster selon votre volet
+        
+        # Commande pour arrêter
+        stop_cover:
+          service: shell_command.volet_arreter
+        
+        # Optionnel: icône personnalisée
+        icon_template: >-
+          {% if is_state('cover.volet_roulant', 'open') %}
+            mdi:window-shutter-open
+          {% else %}
+            mdi:window-shutter
+          {% endif %}
+
+# NOTES:
+# 1. Remplacez les chemins absolus par les chemins corrects de votre installation
+# 2. Ajustez la durée (30 secondes par défaut) selon le temps nécessaire pour 
+#    ouvrir/fermer complètement votre volet
+# 3. Pour tester les commandes manuellement:
+#    - service: shell_command.volet_monter
+#    - service: shell_command.volet_descendre
+#    - service: shell_command.volet_arreter
