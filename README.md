@@ -19,7 +19,24 @@ Contrôle de relais via port série USB pour volet roulant (montée/descente), a
 
 ## 🚀 Installation
 
-### Installation automatique
+### 🐳 Home Assistant dans Docker/Swarm
+
+**Voir le guide complet** : **[DOCKER_SETUP.md](DOCKER_SETUP.md)**
+
+```bash
+chmod +x install_docker.sh
+sudo ./install_docker.sh
+```
+
+⚠️ **IMPORTANT** : Ajoutez le device USB dans votre `docker-compose.yml` :
+```yaml
+services:
+  homeassistant:
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+```
+
+### 💻 Installation locale (sans Docker)
 
 ```bash
 chmod +x install.sh
@@ -71,7 +88,17 @@ python3 volet_arreter.py
 
 ## 🏠 Intégration Home Assistant
 
-### Configuration
+### 🐳 Home Assistant dans Docker
+
+**Suivez le guide complet** : **[Configuration Docker →](DOCKER_SETUP.md)**
+
+Points clés :
+- Mapper le device USB dans `docker-compose.yml`
+- Installer `pyserial` dans le conteneur
+- Copier les scripts dans `/config/scripts/relais/`
+- Créer une règle udev pour un nom persistant (recommandé)
+
+### 💻 Configuration locale (sans Docker)
 
 1. **Modifiez les chemins dans `homeassistant_config.yaml`** :
    ```bash
@@ -182,7 +209,11 @@ relais/
 ├── volet_descendre.py           # Script pour descendre le volet
 ├── volet_arreter.py             # Script pour arrêter le volet
 ├── homeassistant_config.yaml    # Configuration Home Assistant
-├── install.sh                   # Script d'installation
+├── install.sh                   # Script d'installation (local)
+├── install_docker.sh            # Script d'installation (Docker)
+├── docker-compose.yaml.example  # Exemple Docker Compose
+├── DOCKER_SETUP.md              # Guide complet Docker
+├── CONFIGURATION_USB.md         # Guide configuration port USB
 ├── .env.example                 # Exemple de configuration du port USB
 ├── .gitignore                   # Fichiers à ignorer par Git
 └── README.md                    # Cette documentation

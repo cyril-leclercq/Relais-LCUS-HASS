@@ -3,6 +3,11 @@
 # À ajouter dans votre configuration.yaml ou dans un fichier séparé
 # inclus via: cover: !include covers.yaml
 
+# ⚠️ DOCKER: Voir DOCKER_SETUP.md pour la configuration complète
+# - Mapper le device USB dans docker-compose.yml
+# - Installer pyserial dans le conteneur
+# - Copier les scripts dans /config/scripts/relais/
+
 # CONFIGURATION DU PORT USB
 # Méthode 1 (recommandée): Définir le port USB comme variable d'environnement
 # Dans le fichier /etc/systemd/system/home-assistant@homeassistant.service (Linux)

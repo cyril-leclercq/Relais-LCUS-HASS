@@ -1,0 +1,33 @@
+services:
+  matter-server:
+    image: ghcr.io/home-assistant-libs/python-matter-server:stable
+    container_name: matter-server
+    restart: unless-stopped
+    network_mode: host
+    security_opt:
+      - apparmor:unconfined # Parfois nécessaire pour l'accès Bluetooth/mDNS
+    volumes:
+      - /opt/docker/matter/data:/data
+      - /run/dbus:/run/dbus:ro # Indispensable pour l'appairage Nest Hub via Bluetooth
+      
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:2026.4.4
+    container_name: homeassistant
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    volumes:
+      - /opt/docker/hass/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    # ⚠️ IMPORTANT: Mapper le périphérique USB pour le module relais
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0  # Ajustez selon votre port USB
+      # OU si vous utilisez macOS:
+      # - /dev/tty.usbserial-1110:/dev/tty.usbserial-1110
+    # Alternative si le port change (mappage de tous les ttyUSB):
+    # devices:
+    #   - /dev/ttyUSB0:/dev/ttyUSB0
+    #   - /dev/ttyUSB1:/dev/ttyUSB1
+    #   - /dev/ttyACM0:/dev/ttyACM0
+    depends_on:
+      - matter-server
