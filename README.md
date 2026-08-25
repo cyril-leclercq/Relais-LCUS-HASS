@@ -108,12 +108,17 @@ Si Home Assistant est dans un conteneur, ajoutez le mapping USB :
 ```yaml
 services:
   homeassistant:
-    # ... votre configuration ...
+    privileged: true  # Requis pour l'accès USB
+    
+    # Pour symlinks udev (recommandé)
+    device_cgroup_rules:
+      - 'c 188:* rwm'  # Autoriser tous les ttyUSB*
+    
     devices:
-      - /dev/lcus_relay:/dev/lcus_relay  # Nom persistant
-      # OU
-      - /dev/ttyUSB0:/dev/ttyUSB0        # Port direct
+      - /dev/lcus_relay:/dev/lcus_relay  # Nom persistant via udev
 ```
+
+**⚠️ Important** : Si le port USB change de nom (ttyUSB0 → ttyUSB1), utilisez `device_cgroup_rules` pour que le symlink fonctionne.
 
 **Redéployer** :
 ```bash
@@ -122,7 +127,9 @@ docker-compose up -d --force-recreate
 docker stack deploy -c docker-compose.yml hass
 ```
 
-**Exemples complets** : voir [docker-compose.yaml.example](docker-compose.yaml.example)
+**Guides détaillés** :
+- [docker-compose.yaml.example](docker-compose.yaml.example) - Configuration complète
+- [SOLUTION_SYMLINK_DOCKER.md](SOLUTION_SYMLINK_DOCKER.md) - Faire fonctionner les symlinks
 
 ---
 

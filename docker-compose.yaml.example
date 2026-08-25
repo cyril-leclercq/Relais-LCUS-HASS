@@ -46,9 +46,23 @@ services:
     # Décommentez et adaptez selon votre système d'exploitation:
     # ========================================================================
     
+    # ========================================================================
+    # OPTION 1: Utiliser device_cgroup_rules (RECOMMANDÉ pour symlinks)
+    # ========================================================================
+    # Permet au conteneur d'accéder à TOUS les périphériques série USB
+    # Fonctionne avec les symlinks udev ET gère le changement de port
+    # ========================================================================
+    device_cgroup_rules:
+      - 'c 188:* rwm'  # Autoriser tous les devices USB série (ttyUSB*)
+    
     devices:
-      # --- Linux (Raspberry Pi, NAS Synology, serveur Linux) ---
-      - /dev/ttyUSB0:/dev/ttyUSB0
+      # --- RECOMMANDÉ: Symlink udev persistant ---
+      # Fonctionne automatiquement même si le port change (ttyUSB0 → ttyUSB1)
+      # Voir: docs/DETECTION_MODULE_LINUX.md pour créer la règle udev
+      - /dev/lcus_relay:/dev/lcus_relay
+      
+      # --- Alternative: Port direct (moins robuste) ---
+      # - /dev/ttyUSB0:/dev/ttyUSB0  # Le port peut changer au reboot
       
       # --- Alternative avec nom persistant (recommandé) ---
       # Après avoir créé une règle udev (voir DOCKER_SETUP.md):
