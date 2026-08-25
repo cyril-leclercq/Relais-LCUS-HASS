@@ -20,7 +20,7 @@
 4. Sélectionnez **Dépôts personnalisés**
 5. Ajoutez l'URL du dépôt :
    ```
-   https://github.com/zunix/volet-relais-usb
+   https://github.com/cyril-leclercq/Relais-LCUS-HASS
    ```
 6. Sélectionnez la catégorie **Integration**
 7. Cliquez sur **Ajouter**
@@ -38,7 +38,7 @@ cd /config  # ou /opt/docker/hass/config si Docker
 mkdir -p custom_components
 
 # Cloner le dépôt
-git clone https://github.com/zunix/volet-relais-usb.git temp_volet
+git clone https://github.com/cyril-leclercq/Relais-LCUS-HASS.git temp_volet
 cp -r temp_volet/custom_components/volet_relais_usb custom_components/
 rm -rf temp_volet
 
@@ -273,7 +273,7 @@ cards:
 ```bash
 cd /config/custom_components
 rm -rf volet_relais_usb
-git clone https://github.com/zunix/volet-relais-usb.git temp
+git clone https://github.com/cyril-leclercq/Relais-LCUS-HASS.git temp
 cp -r temp/custom_components/volet_relais_usb .
 rm -rf temp
 # Redémarrer Home Assistant
@@ -291,8 +291,8 @@ rm -rf temp
 
 ## 🤝 Support
 
-- **Issues** : https://github.com/zunix/volet-relais-usb/issues
-- **Discussions** : https://github.com/zunix/volet-relais-usb/discussions
+- **Issues** : https://github.com/cyril-leclercq/Relais-LCUS-HASS/issues
+- **Discussions** : https://github.com/cyril-leclercq/Relais-LCUS-HASS/discussions
 
 ---
 

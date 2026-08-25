@@ -20,7 +20,7 @@
 ### 1. Créer un dépôt GitHub
 
 1. Allez sur https://github.com/new
-2. Nom du dépôt : `volet-relais-usb`
+2. Nom du dépôt : `Relais-LCUS-HASS`
 3. Description : "Intégration Home Assistant pour volet roulant via relais USB"
 4. Public ✅
 5. **Ne pas** initialiser avec README (on a déjà le nôtre)
@@ -32,7 +32,7 @@
 # Dans le répertoire /Users/zunix/Src/relais
 
 # Configurer le remote
-git remote add origin https://github.com/zunix/volet-relais-usb.git
+git remote add origin https://github.com/cyril-leclercq/Relais-LCUS-HASS.git
 
 # Pousser le code
 git push -u origin main
@@ -81,7 +81,7 @@ Vos utilisateurs pourront maintenant installer l'intégration :
 
 1. **HACS** → **Intégrations**
 2. **⋮** (3 points) → **Dépôts personnalisés**
-3. URL : `https://github.com/zunix/volet-relais-usb`
+3. URL : `https://github.com/cyril-leclercq/Relais-LCUS-HASS`
 4. Catégorie : **Integration**
 5. **Ajouter**
 
@@ -143,7 +143,7 @@ Les utilisateurs verront une notification de mise à jour dans HACS.
 1. **Cloner le dépôt** dans un autre répertoire :
    ```bash
    cd /tmp
-   git clone https://github.com/zunix/volet-relais-usb.git
+   git clone https://github.com/cyril-leclercq/Relais-LCUS-HASS.git
    ```
 
 2. **Vérifier la structure** :
@@ -178,7 +178,7 @@ Les utilisateurs verront une notification de mise à jour dans HACS.
 
 ```bash
 # Configurer le remote GitHub
-git remote add origin https://github.com/zunix/volet-relais-usb.git
+git remote add origin https://github.com/cyril-leclercq/Relais-LCUS-HASS.git
 
 # Pousser le code
 git push -u origin main

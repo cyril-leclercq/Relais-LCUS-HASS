@@ -31,5 +31,5 @@ Intégration Home Assistant pour contrôler un volet roulant via un module relai
 
 ## Support
 
-🐛 [Signaler un bug](https://github.com/zunix/volet-relais-usb/issues)  
-💬 [Discussions](https://github.com/zunix/volet-relais-usb/discussions)
+🐛 [Signaler un bug](https://github.com/cyril-leclercq/Relais-LCUS-HASS/issues)  
+💬 [Discussions](https://github.com/cyril-leclercq/Relais-LCUS-HASS/discussions)
