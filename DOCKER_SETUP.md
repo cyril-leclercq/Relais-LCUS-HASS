@@ -6,7 +6,67 @@ Par défaut, les conteneurs Docker **n'ont pas accès aux périphériques USB** 
 
 ---
 
-## ✅ Solution 1 : Mapper le périphérique USB spécifique
+## 📦 Exemples de configuration fournis
+
+Ce projet inclut plusieurs exemples de configuration Docker adaptés à différents scénarios :
+
+- **[docker-compose.yaml.example](docker-compose.yaml.example)** : Configuration complète Docker Compose avec Matter Server (production)
+- **[docker-compose.swarm.yaml](docker-compose.swarm.yaml)** : Configuration Docker Swarm avec contraintes de placement
+
+Choisissez le fichier correspondant à votre environnement et copiez-le :
+
+```bash
+# Docker Compose standalone
+cp docker-compose.yaml.example docker-compose.yaml
+
+# Docker Swarm
+cp docker-compose.swarm.yaml docker-compose.yaml
+```
+
+---
+
+## ✅ Solution 1 : Configuration testée en production
+
+### Configuration avec Matter Server + Home Assistant
+
+Cette configuration est testée et fonctionne en production :
+
+```yaml
+services:
+  matter-server:
+    image: ghcr.io/home-assistant-libs/python-matter-server:stable
+    container_name: matter-server
+    restart: unless-stopped
+    network_mode: host
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - /opt/docker/matter/data:/data
+      - /run/dbus:/run/dbus:ro
+      
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:2026.4.4
+    container_name: homeassistant
+    restart: unless-stopped
+    privileged: true        # ← Accès aux périphériques
+    network_mode: host      # ← Requis pour la découverte réseau
+    volumes:
+      - /opt/docker/hass/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0  # ← MAPPING USB CRITIQUE
+    depends_on:
+      - matter-server
+```
+
+**Points clés** :
+- ✅ `privileged: true` : Donne accès aux périphériques système
+- ✅ `network_mode: host` : Nécessaire pour mDNS et découverte réseau
+- ✅ `devices` : Mapping explicite du port USB
+
+---
+
+## 🔍 Solution 2 : Identifier votre port USB
 
 ### Étape 1 : Identifier votre port USB sur l'hôte
 
@@ -21,22 +81,19 @@ ls /dev/tty* | grep -i usb
 
 ### Étape 2 : Modifier votre docker-compose.yml
 
+Ajoutez la section `devices` à votre service `homeassistant` :
+
 ```yaml
 services:
   homeassistant:
-    image: ghcr.io/home-assistant/home-assistant:2026.4.4
-    container_name: homeassistant
-    restart: unless-stopped
-    privileged: true
-    network_mode: host
-    volumes:
-      - /opt/docker/hass/config:/config
-      - /etc/localtime:/etc/localtime:ro
+    # ... votre configuration existante ...
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0  # ← AJOUTER CETTE LIGNE
-    depends_on:
-      - matter-server
 ```
+
+**Voir les exemples complets** :
+- [docker-compose.yaml.example](docker-compose.yaml.example) pour Docker Compose
+- [docker-compose.swarm.yaml](docker-compose.swarm.yaml) pour Docker Swarm
 
 ### Étape 3 : Redéployer le stack
 

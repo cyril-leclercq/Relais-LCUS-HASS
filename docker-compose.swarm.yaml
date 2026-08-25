@@ -1,0 +1,191 @@
+# ============================================================================
+# Docker Swarm Stack - Home Assistant + Matter Server + Volet Relais USB
+# ============================================================================
+# Configuration pour Docker Swarm avec contraintes de placement
+# Garantit que le conteneur homeassistant tourne toujours sur le nœud
+# où est branché le module relais USB
+# ============================================================================
+
+version: '3.8'
+
+services:
+  # --------------------------------------------------------------------------
+  # Matter Server
+  # --------------------------------------------------------------------------
+  matter-server:
+    image: ghcr.io/home-assistant-libs/python-matter-server:stable
+    restart: unless-stopped
+    network_mode: host
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - /opt/docker/matter/data:/data
+      - /run/dbus:/run/dbus:ro
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          # Contrainte optionnelle: forcer sur un nœud spécifique
+          # - node.hostname == votre-noeud-principal
+          - node.role == manager  # Ou worker selon votre setup
+
+  # --------------------------------------------------------------------------
+  # Home Assistant
+  # --------------------------------------------------------------------------
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:2026.4.4
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    
+    volumes:
+      - /opt/docker/hass/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    
+    # ========================================================================
+    # ⚠️  CONFIGURATION USB - IMPORTANT POUR SWARM
+    # ========================================================================
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+      # OU avec règle udev (recommandé):
+      # - /dev/volet_relais:/dev/volet_relais
+    
+    deploy:
+      mode: replicated
+      replicas: 1
+      
+      # ====================================================================
+      # 🎯 CONTRAINTES DE PLACEMENT - CRITIQUE POUR USB
+      # ====================================================================
+      # Le conteneur DOIT toujours tourner sur le nœud physique où est
+      # branché le module relais USB. Choisissez UNE des méthodes:
+      # ====================================================================
+      
+      placement:
+        constraints:
+          # Méthode 1: Forcer sur un nœud par hostname (RECOMMANDÉ)
+          # Vérifiez le hostname: docker node ls
+          - node.hostname == votre-noeud-usb
+          
+          # Méthode 2: Label personnalisé (plus flexible)
+          # 1. Labeliser le nœud: docker node update --label-add usb_relay=true <node-id>
+          # 2. Décommenter la ligne suivante:
+          # - node.labels.usb_relay == true
+          
+          # Méthode 3: Par rôle (si un seul manager/worker)
+          # - node.role == manager
+      
+      # ====================================================================
+      # Politique de redémarrage
+      # ====================================================================
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      
+      # ====================================================================
+      # Ressources (optionnel mais recommandé)
+      # ====================================================================
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    depends_on:
+      - matter-server
+
+# ============================================================================
+# DÉPLOIEMENT SWARM
+# ============================================================================
+# 1. Labelliser le nœud où est branché le relais USB (optionnel):
+#    docker node ls  # Trouver l'ID du nœud
+#    docker node update --label-add usb_relay=true <node-id>
+#
+# 2. Déployer le stack:
+#    docker stack deploy -c docker-compose.swarm.yaml hass
+#
+# 3. Vérifier le déploiement:
+#    docker stack ps hass
+#    docker service logs -f hass_homeassistant
+#
+# 4. Mettre à jour le stack:
+#    docker stack deploy -c docker-compose.swarm.yaml hass
+#
+# 5. Supprimer le stack:
+#    docker stack rm hass
+# ============================================================================
+
+# ============================================================================
+# VÉRIFICATION USB DANS SWARM
+# ============================================================================
+# 1. Trouver sur quel nœud tourne le conteneur:
+#    docker stack ps hass | grep homeassistant
+#
+# 2. Se connecter au nœud et vérifier:
+#    docker exec $(docker ps -q -f name=hass_homeassistant) ls -l /dev/ttyUSB0
+#
+# 3. Tester la connexion série:
+#    docker exec $(docker ps -q -f name=hass_homeassistant) \
+#      python3 -c "import serial; print(serial.Serial('/dev/ttyUSB0', 9600))"
+# ============================================================================
+
+# ============================================================================
+# TROUBLESHOOTING SWARM
+# ============================================================================
+# Problème: Le conteneur est planifié sur le mauvais nœud
+# Solution: Vérifier les contraintes de placement dans deploy.placement
+#
+# Problème: Le port USB n'est pas accessible
+# Solution: Vérifier que le device est mappé et que le nœud a le bon USB
+#
+# Problème: Permission denied sur /dev/ttyUSB0
+# Solution: Sur le nœud hôte:
+#   sudo chmod 666 /dev/ttyUSB0
+#   sudo usermod -aG dialout $(whoami)
+#
+# Problème: Le service ne démarre pas
+# Solution: Vérifier les logs:
+#   docker service logs hass_homeassistant
+# ============================================================================
+
+# ============================================================================
+# MIGRATION DEPUIS DOCKER-COMPOSE
+# ============================================================================
+# Si vous migrez depuis docker-compose.yaml:
+#
+# 1. Sauvegarder votre configuration Home Assistant:
+#    cp -r /opt/docker/hass/config /opt/docker/hass/config.backup
+#
+# 2. Arrêter les conteneurs standalone:
+#    docker-compose down
+#
+# 3. Déployer en mode Swarm:
+#    docker stack deploy -c docker-compose.swarm.yaml hass
+#
+# 4. Vérifier que tout fonctionne:
+#    docker stack ps hass
+#    docker service logs -f hass_homeassistant
+# ============================================================================
+
+# ============================================================================
+# CONFIGURATION MULTI-NŒUDS
+# ============================================================================
+# Si vous avez plusieurs nœuds Swarm:
+#
+# 1. Identifiez le nœud avec le relais USB:
+#    docker node ls
+#
+# 2. Labelisez ce nœud:
+#    docker node update --label-add has_usb_relay=true <node-name>
+#
+# 3. Mettez à jour la contrainte dans ce fichier:
+#    - node.labels.has_usb_relay == true
+#
+# 4. Redéployez:
+#    docker stack deploy -c docker-compose.swarm.yaml hass
+# ============================================================================

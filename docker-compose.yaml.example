@@ -1,33 +1,128 @@
+# ============================================================================
+# Docker Compose - Home Assistant + Matter Server + Volet Relais USB
+# ============================================================================
+# Configuration de production testée avec:
+# - Home Assistant 2026.4.4
+# - Matter Server (stable)
+# - Module relais USB 2 canaux pour volet roulant
+#
+# IMPORTANT: Assurez-vous que le port USB est correctement mappé dans la
+# section devices du conteneur homeassistant.
+# ============================================================================
+
 services:
+  # --------------------------------------------------------------------------
+  # Matter Server - Protocole Matter pour appareils connectés
+  # --------------------------------------------------------------------------
   matter-server:
     image: ghcr.io/home-assistant-libs/python-matter-server:stable
     container_name: matter-server
     restart: unless-stopped
-    network_mode: host
+    network_mode: host  # Nécessaire pour la découverte mDNS
     security_opt:
-      - apparmor:unconfined # Parfois nécessaire pour l'accès Bluetooth/mDNS
+      - apparmor:unconfined  # Requis pour l'accès Bluetooth/mDNS
     volumes:
       - /opt/docker/matter/data:/data
-      - /run/dbus:/run/dbus:ro # Indispensable pour l'appairage Nest Hub via Bluetooth
-      
+      - /run/dbus:/run/dbus:ro  # Indispensable pour l'appairage Nest Hub via Bluetooth
+
+  # --------------------------------------------------------------------------
+  # Home Assistant - Intégration domotique principale
+  # --------------------------------------------------------------------------
   homeassistant:
     image: ghcr.io/home-assistant/home-assistant:2026.4.4
     container_name: homeassistant
     restart: unless-stopped
-    privileged: true
-    network_mode: host
+    privileged: true  # Donne accès aux périphériques USB
+    network_mode: host  # Requis pour la découverte réseau et mDNS
+    
     volumes:
       - /opt/docker/hass/config:/config
       - /etc/localtime:/etc/localtime:ro
-    # ⚠️ IMPORTANT: Mapper le périphérique USB pour le module relais
+    
+    # ========================================================================
+    # ⚠️  CONFIGURATION USB POUR LE MODULE RELAIS VOLET ROULANT
+    # ========================================================================
+    # Le module relais USB doit être mappé dans le conteneur.
+    # Décommentez et adaptez selon votre système d'exploitation:
+    # ========================================================================
+    
     devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0  # Ajustez selon votre port USB
-      # OU si vous utilisez macOS:
+      # --- Linux (Raspberry Pi, NAS Synology, serveur Linux) ---
+      - /dev/ttyUSB0:/dev/ttyUSB0
+      
+      # --- Alternative avec nom persistant (recommandé) ---
+      # Après avoir créé une règle udev (voir DOCKER_SETUP.md):
+      # - /dev/volet_relais:/dev/volet_relais
+      
+      # --- macOS (développement local uniquement) ---
       # - /dev/tty.usbserial-1110:/dev/tty.usbserial-1110
-    # Alternative si le port change (mappage de tous les ttyUSB):
-    # devices:
-    #   - /dev/ttyUSB0:/dev/ttyUSB0
-    #   - /dev/ttyUSB1:/dev/ttyUSB1
-    #   - /dev/ttyACM0:/dev/ttyACM0
+      
+      # --- Windows (avec Docker Desktop + WSL2) ---
+      # - COM3:COM3
+      
+      # --- Si vous avez plusieurs ports USB à mapper ---
+      # - /dev/ttyUSB0:/dev/ttyUSB0
+      # - /dev/ttyUSB1:/dev/ttyUSB1
+      # - /dev/ttyACM0:/dev/ttyACM0
+    
+    # ========================================================================
+    # 📝 NOTES IMPORTANTES:
+    # ========================================================================
+    # 1. Vérifiez le port USB sur l'hôte AVANT de mapper:
+    #    Linux:  ls /dev/tty* | grep -E 'USB|ACM'
+    #    macOS:  ls /dev/tty.* | grep usb
+    #
+    # 2. Le port peut changer au redémarrage. Solutions:
+    #    a) Créer une règle udev pour un nom fixe (Linux)
+    #    b) Identifier le port par ID physique
+    #    Voir: DOCKER_SETUP.md et CONFIGURATION_USB.md
+    #
+    # 3. Permissions: L'utilisateur doit avoir accès au port USB
+    #    Linux: sudo usermod -aG dialout $USER
+    #           sudo chmod 666 /dev/ttyUSB0
+    #
+    # 4. Swarm mode: Utilisez constraints pour garantir que le conteneur
+    #    tourne toujours sur le même nœud où est branché le relais USB
+    # ========================================================================
+    
     depends_on:
       - matter-server
+
+# ============================================================================
+# DÉPLOIEMENT
+# ============================================================================
+# Docker Compose (standalone):
+#   docker-compose up -d
+#   docker-compose logs -f homeassistant
+#
+# Docker Swarm:
+#   docker stack deploy -c docker-compose.yaml hass-stack
+#   docker service logs -f hass-stack_homeassistant
+#
+# Redéployer après modification:
+#   docker-compose up -d --force-recreate
+#   docker stack deploy -c docker-compose.yaml hass-stack --force
+# ============================================================================
+
+# ============================================================================
+# VÉRIFICATION DU PORT USB DANS LE CONTENEUR
+# ============================================================================
+# Vérifier que le port USB est bien accessible:
+#   docker exec homeassistant ls -l /dev/ttyUSB0
+#   docker exec homeassistant python3 -c "import serial; print(serial.Serial('/dev/ttyUSB0', 9600))"
+#
+# Si erreur "Permission denied":
+#   sudo chmod 666 /dev/ttyUSB0
+#
+# Si erreur "No such file":
+#   Vérifier le mapping dans la section devices ci-dessus
+# ============================================================================
+
+# ============================================================================
+# DOCUMENTATION
+# ============================================================================
+# - Guide complet Docker:     DOCKER_SETUP.md
+# - Configuration USB:        CONFIGURATION_USB.md
+# - Installation HACS:        HACS_INSTALLATION.md
+# - README:                   README.md
+# ============================================================================
