@@ -42,35 +42,17 @@ services:
     # ========================================================================
     # ⚠️  CONFIGURATION USB POUR LE MODULE RELAIS VOLET ROULANT
     # ========================================================================
-    # Le module relais USB doit être mappé dans le conteneur.
-    # Décommentez et adaptez selon votre système d'exploitation:
+    # MÉTHODE RECOMMANDÉE: Utiliser /dev/serial/by-id/
+    # - Identifiant stable créé automatiquement par le système
+    # - Fonctionne même si le port change (ttyUSB0 → ttyUSB1)
+    # - Aucune règle udev personnalisée nécessaire
     # ========================================================================
-    
-    # ========================================================================
-    # OPTION 1: Utiliser device_cgroup_rules (RECOMMANDÉ pour symlinks)
-    # ========================================================================
-    # Permet au conteneur d'accéder à TOUS les périphériques série USB
-    # Fonctionne avec les symlinks udev ET gère le changement de port
-    # ========================================================================
-    device_cgroup_rules:
-      - 'c 188:* rwm'  # Autoriser tous les devices USB série (ttyUSB*)
     
     devices:
-      # --- RECOMMANDÉ: Symlink udev persistant ---
-      # Fonctionne automatiquement même si le port change (ttyUSB0 → ttyUSB1)
-      # Voir: docs/DETECTION_MODULE_LINUX.md pour créer la règle udev
-      - /dev/lcus_relay:/dev/lcus_relay
-      
-      # --- Alternative: Port direct (moins robuste) ---
-      # - /dev/ttyUSB0:/dev/ttyUSB0  # Le port peut changer au reboot
-    
-    # ========================================================================
-    # 📝 NOTES:
-    # ========================================================================
-    # 1. Trouver votre ID: ls -l /dev/serial/by-id/
-    # 2. Remplacer usb-1a86_USB_Serial-if00-port0 par votre ID
-    # 3. Docker Swarm: Ajoutez placement constraints pour le bon nœud
-    # ========================================================================
+      # 1. Trouver votre device: ls -l /dev/serial/by-id/
+      # 2. Remplacer par votre ID (exemple: usb-1a86_USB_Serial-if00-port0)
+      # 3. Docker crée automatiquement /dev/lcus_relay dans le conteneur
+      - /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/lcus_relay
     
     depends_on:
       - matter-server
