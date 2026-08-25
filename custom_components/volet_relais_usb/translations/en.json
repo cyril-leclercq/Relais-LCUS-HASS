@@ -18,5 +18,17 @@
     "abort": {
       "already_configured": "This port is already configured."
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Roller shutter options",
+        "description": "Modify your roller shutter settings.",
+        "data": {
+          "travel_time": "Travel time (seconds)",
+          "invert_relay": "Invert relay direction (up/down)"
+        }
+      }
+    }
   }
 }

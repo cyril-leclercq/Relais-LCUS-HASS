@@ -36,10 +36,30 @@ async def async_setup_entry(
     """Configuration de l'entité cover depuis une config entry."""
     name = config_entry.data[CONF_NAME]
     port = config_entry.data[CONF_PORT]
-    travel_time = config_entry.data[CONF_TRAVEL_TIME]
-    invert_relay = config_entry.data.get(CONF_INVERT_RELAY, False)
+    
+    # Utiliser les options en priorité, sinon les données de configuration
+    travel_time = config_entry.options.get(
+        CONF_TRAVEL_TIME,
+        config_entry.data.get(CONF_TRAVEL_TIME)
+    )
+    invert_relay = config_entry.options.get(
+        CONF_INVERT_RELAY,
+        config_entry.data.get(CONF_INVERT_RELAY, False)
+    )
 
-    async_add_entities([VoletRelaisUSBCover(name, port, travel_time, invert_relay)], True)
+    cover = VoletRelaisUSBCover(name, port, travel_time, invert_relay)
+    
+    # Ajouter un listener pour les changements d'options
+    config_entry.async_on_unload(
+        config_entry.add_update_listener(update_listener)
+    )
+    
+    async_add_entities([cover], True)
+
+
+async def update_listener(hass: HomeAssistant, config_entry: ConfigEntry) -> None:
+    """Gérer les mises à jour des options."""
+    await hass.config_entries.async_reload(config_entry.entry_id)
 
 
 class VoletRelaisUSBCover(CoverEntity):

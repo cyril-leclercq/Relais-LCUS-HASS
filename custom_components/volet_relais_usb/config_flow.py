@@ -39,6 +39,13 @@ class VoletRelaisUSBConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    @staticmethod
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> "VoletRelaisUSBOptionsFlow":
+        """Obtenir le flux d'options."""
+        return VoletRelaisUSBOptionsFlow(config_entry)
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
@@ -85,3 +92,41 @@ class VoletRelaisUSBConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_import(self, import_config: dict[str, Any]) -> FlowResult:
         """Import d'une configuration depuis configuration.yaml."""
         return await self.async_step_user(import_config)
+
+
+class VoletRelaisUSBOptionsFlow(config_entries.OptionsFlow):
+    """Flux d'options pour Volet Roulant Relais USB."""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        """Initialiser le flux d'options."""
+        self.config_entry = config_entry
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Gérer les options."""
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+
+        # Récupérer les valeurs actuelles depuis data ou options
+        current_travel_time = self.config_entry.options.get(
+            CONF_TRAVEL_TIME,
+            self.config_entry.data.get(CONF_TRAVEL_TIME, DEFAULT_TRAVEL_TIME)
+        )
+        current_invert_relay = self.config_entry.options.get(
+            CONF_INVERT_RELAY,
+            self.config_entry.data.get(CONF_INVERT_RELAY, False)
+        )
+
+        options_schema = vol.Schema(
+            {
+                vol.Required(
+                    CONF_TRAVEL_TIME, default=current_travel_time
+                ): vol.All(vol.Coerce(int), vol.Range(min=1, max=60)),
+                vol.Optional(
+                    CONF_INVERT_RELAY, default=current_invert_relay
+                ): cv.boolean,
+            }
+        )
+
+        return self.async_show_form(step_id="init", data_schema=options_schema)
