@@ -18,6 +18,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import (
     DOMAIN,
     CONF_TRAVEL_TIME,
+    CONF_INVERT_RELAY,
     CANAL_MONTEE,
     CANAL_DESCENTE,
     DUREE_MAX,
@@ -36,8 +37,9 @@ async def async_setup_entry(
     name = config_entry.data[CONF_NAME]
     port = config_entry.data[CONF_PORT]
     travel_time = config_entry.data[CONF_TRAVEL_TIME]
+    invert_relay = config_entry.data.get(CONF_INVERT_RELAY, False)
 
-    async_add_entities([VoletRelaisUSBCover(name, port, travel_time)], True)
+    async_add_entities([VoletRelaisUSBCover(name, port, travel_time, invert_relay)], True)
 
 
 class VoletRelaisUSBCover(CoverEntity):
@@ -48,15 +50,24 @@ class VoletRelaisUSBCover(CoverEntity):
         CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.STOP
     )
 
-    def __init__(self, name: str, port: str, travel_time: int) -> None:
+    def __init__(self, name: str, port: str, travel_time: int, invert_relay: bool = False) -> None:
         """Initialisation du volet."""
         self._attr_name = name
         self._attr_unique_id = f"{DOMAIN}_{port.replace('/', '_')}"
         self._port = port
         self._travel_time = travel_time
+        self._invert_relay = invert_relay
         self._serial_port = None
         self._is_opening = False
         self._is_closing = False
+        
+        # Définir les canaux selon l'inversion
+        if self._invert_relay:
+            self._canal_montee = CANAL_DESCENTE
+            self._canal_descente = CANAL_MONTEE
+        else:
+            self._canal_montee = CANAL_MONTEE
+            self._canal_descente = CANAL_DESCENTE
         
         # Initialiser la connexion série
         self._init_serial()
@@ -93,8 +104,8 @@ class VoletRelaisUSBCover(CoverEntity):
 
     def _stop_tous_relais(self) -> None:
         """Arrêter tous les relais."""
-        self._relais(CANAL_MONTEE, False)
-        self._relais(CANAL_DESCENTE, False)
+        self._relais(self._canal_montee, False)
+        self._relais(self._canal_descente, False)
         self._is_opening = False
         self._is_closing = False
 
@@ -125,12 +136,12 @@ class VoletRelaisUSBCover(CoverEntity):
         
         try:
             await self.hass.async_add_executor_job(
-                self._relais, CANAL_MONTEE, True
+                self._relais, self._canal_montee, True
             )
             await asyncio.sleep(min(self._travel_time, DUREE_MAX))
         finally:
             await self.hass.async_add_executor_job(
-                self._relais, CANAL_MONTEE, False
+                self._relais, self._canal_montee, False
             )
             self._is_opening = False
             self.async_write_ha_state()
@@ -147,12 +158,12 @@ class VoletRelaisUSBCover(CoverEntity):
         
         try:
             await self.hass.async_add_executor_job(
-                self._relais, CANAL_DESCENTE, True
+                self._relais, self._canal_descente, True
             )
             await asyncio.sleep(min(self._travel_time, DUREE_MAX))
         finally:
             await self.hass.async_add_executor_job(
-                self._relais, CANAL_DESCENTE, False
+                self._relais, self._canal_descente, False
             )
             self._is_closing = False
             self.async_write_ha_state()

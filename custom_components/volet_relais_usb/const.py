@@ -10,6 +10,7 @@ DEFAULT_TRAVEL_TIME = 30
 
 # Configuration
 CONF_TRAVEL_TIME = "travel_time"
+CONF_INVERT_RELAY = "invert_relay"
 
 # Canaux du relais
 CANAL_MONTEE = 1

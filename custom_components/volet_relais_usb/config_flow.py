@@ -17,6 +17,7 @@ from .const import (
     DEFAULT_PORT,
     DEFAULT_TRAVEL_TIME,
     CONF_TRAVEL_TIME,
+    CONF_INVERT_RELAY,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -71,6 +72,7 @@ class VoletRelaisUSBConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(
                     CONF_TRAVEL_TIME, default=DEFAULT_TRAVEL_TIME
                 ): vol.All(vol.Coerce(int), vol.Range(min=1, max=60)),
+                vol.Optional(CONF_INVERT_RELAY, default=False): cv.boolean,
             }
         )
 

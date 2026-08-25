@@ -7,7 +7,8 @@
         "data": {
           "name": "Nom",
           "port": "Port série USB (ex: /dev/ttyUSB0)",
-          "travel_time": "Temps de course (secondes)"
+          "travel_time": "Temps de course (secondes)",
+          "invert_relay": "Inverser le sens des relais (monter/descendre)"
         }
       }
     },
