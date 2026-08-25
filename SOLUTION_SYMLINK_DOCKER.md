@@ -1,33 +1,36 @@
-# 🔧 Faire fonctionner le symlink udev dans Docker
+# 🔧 Solution simple : /dev/serial/by-id/
 
-## 🎯 Problème
+## 🎯 Problème résolu
 
 - Le port USB change de nom : `ttyUSB0` → `ttyUSB1`
-- Le symlink `/dev/lcus_relay` existe sur l'HÔTE
-- Docker ne voit PAS `/dev/lcus_relay` dans le conteneur
+- Besoin d'un nom stable sans créer de règles udev personnalisées
 
 ---
 
-## ✅ SOLUTION : device_cgroup_rules
+## ✅ SOLUTION SIMPLE : Utiliser /dev/serial/by-id/
 
-Cette méthode autorise le conteneur à accéder à **TOUS** les périphériques série USB, ce qui permet au symlink de fonctionner.
+Linux crée **automatiquement** des liens symboliques stables dans `/dev/serial/by-id/`.
 
-### Dans `docker-compose.yml` :
+### 1️⃣ Trouver votre device (sur l'HÔTE)
+
+```bash
+ls -l /dev/serial/by-id/
+
+# Résultat exemple:
+# usb-1a86_USB_Serial-if00-port0 -> ../../ttyUSB1
+```
+
+### 2️⃣ Configuration docker-compose.yml
 
 ```yaml
 services:
   homeassistant:
     image: ghcr.io/home-assistant/home-assistant:2026.4.4
-    privileged: true  # ← Déjà présent
-    
-    # ========================================================
-    # AJOUTER cette section (la clé du succès)
-    # ========================================================
-    device_cgroup_rules:
-      - 'c 188:* rwm'  # Autoriser tous les devices série USB
+    privileged: true
     
     devices:
-      - /dev/lcus_relay:/dev/lcus_relay  # ✓ Le symlink fonctionnera
+      # Docker crée /dev/lcus_relay dans le conteneur
+      - /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/lcus_relay
 ```
 
 ### Redémarrer le conteneur :
@@ -67,43 +70,21 @@ s.close()
 
 ## 🔄 Avantages
 
-✅ Le symlink `/dev/lcus_relay` fonctionne dans le conteneur  
-✅ Gère automatiquement le changement de port (ttyUSB0 → ttyUSB1)  
-✅ Pas besoin de modifier la config si le port change  
-✅ Compatible avec les règles udev  
+✅ **Automatique** : `/dev/serial/by-id/` créé par le système  
+✅ **Stable** : Même si le port change (ttyUSB0 → ttyUSB1)  
+✅ **Simple** : Aucune règle udev personnalisée requise  
+✅ **Propre** : Docker crée `/dev/lcus_relay` directement dans le conteneur  
 
 ---
 
-## 🛡️ Sécurité
+## 📋 Pourquoi ça fonctionne ?
 
-Cette configuration reste sécurisée car :
-- Elle donne accès uniquement aux devices série USB (188:*)
-- Pas d'accès aux autres périphériques système
-- Fonctionne en combinaison avec `privileged: true` que vous avez déjà
+`/dev/serial/by-id/` contient des liens symboliques créés automatiquement par `udev` basés sur :
+- Vendor ID (idVendor)
+- Product ID (idProduct)
+- Numéro de série (si disponible)
 
----
-
-## 📝 Alternative (si device_cgroup_rules ne fonctionne pas)
-
-### Créer le symlink DANS le conteneur :
-
-```yaml
-services:
-  homeassistant:
-    privileged: true
-    devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
-      - /dev/ttyUSB1:/dev/ttyUSB1  # Mapper les deux
-    
-    # Script de démarrage qui crée le symlink
-    entrypoint: >
-      sh -c "
-      ln -sf /dev/ttyUSB* /dev/lcus_relay 2>/dev/null || true &&
-      exec /init
-      "
-```
-
-Mais cette méthode est moins élégante que `device_cgroup_rules`.
+Docker peut **mapper directement** ces liens et les créer dans le conteneur sous le nom de votre choix (`/dev/lcus_relay`).
 
 ---
 

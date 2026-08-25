@@ -61,30 +61,14 @@ rm -rf temp
 #### Sur Linux
 
 ```bash
-# Voir les ports USB disponibles
-ls /dev/tty* | grep -E 'USB|ACM'
-# Résultat : /dev/ttyUSB0
+# Méthode recommandée : utiliser l'ID stable du système
+ls -l /dev/serial/by-id/
 
-# Créer un nom persistant (recommandé pour Docker)
-# 1. Identifier le module
-udevadm info -a -n /dev/ttyUSB0 | grep -E 'idVendor|idProduct'
+# Exemple de résultat :
+# usb-1a86_USB_Serial-if00-port0 -> ../../ttyUSB0
 
-# 2. Créer la règle udev
-sudo nano /etc/udev/rules.d/99-lcus-relay.rules
-```
-
-**Contenu du fichier** (ajustez idVendor/idProduct selon votre module) :
-```udev
-SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", SYMLINK+="lcus_relay", MODE="0666", GROUP="dialout"
-```
-
-```bash
-# 3. Recharger
-sudo udevadm control --reload-rules
-sudo udevadm trigger
-
-# 4. Vérifier
-ls -l /dev/lcus_relay
+# Copier le nom complet (ex: usb-1a86_USB_Serial-if00-port0)
+# Ce lien est stable même si le port change (ttyUSB0 → ttyUSB1)
 ```
 
 #### Sur macOS
@@ -103,33 +87,32 @@ COM3, COM4, etc.
 
 ### 3. Configuration Docker
 
-Si Home Assistant est dans un conteneur, ajoutez le mapping USB :
+Si Home Assistant est dans un conteneur :
+
+```bash
+# 1. Trouver l'ID stable du module USB (sur l'HÔTE)
+ls -l /dev/serial/by-id/
+# Résultat : usb-1a86_USB_Serial-if00-port0 -> ../../ttyUSB1
+```
 
 ```yaml
+# 2. Dans docker-compose.yml
 services:
   homeassistant:
-    privileged: true  # Requis pour l'accès USB
-    
-    # Pour symlinks udev (recommandé)
-    device_cgroup_rules:
-      - 'c 188:* rwm'  # Autoriser tous les ttyUSB*
-    
+    privileged: true
     devices:
-      - /dev/lcus_relay:/dev/lcus_relay  # Nom persistant via udev
+      # Docker crée automatiquement /dev/lcus_relay dans le conteneur
+      - /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/lcus_relay
 ```
 
-**⚠️ Important** : Si le port USB change de nom (ttyUSB0 → ttyUSB1), utilisez `device_cgroup_rules` pour que le symlink fonctionne.
-
-**Redéployer** :
 ```bash
+# 3. Redémarrer
 docker-compose up -d --force-recreate
-# OU pour Swarm
-docker stack deploy -c docker-compose.yml hass
 ```
 
-**Guides détaillés** :
-- [docker-compose.yaml.example](docker-compose.yaml.example) - Configuration complète
-- [SOLUTION_SYMLINK_DOCKER.md](SOLUTION_SYMLINK_DOCKER.md) - Faire fonctionner les symlinks
+**✅ Avantages** : Nom stable même si le port change (ttyUSB0 → ttyUSB1), aucune règle udev requise.
+
+**Voir** : [docker-compose.yaml.example](docker-compose.yaml.example) pour la configuration complète
 
 ---
 
