@@ -1,0 +1,21 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Volet Roulant Relais USB",
+        "description": "Configurez votre volet roulant contrôlé par relais USB.",
+        "data": {
+          "name": "Nom",
+          "port": "Port série USB (ex: /dev/ttyUSB0)",
+          "travel_time": "Temps de course (secondes)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossible de se connecter au port série. Vérifiez que le périphérique est branché et que le port est correct."
+    },
+    "abort": {
+      "already_configured": "Ce port est déjà configuré."
+    }
+  }
+}

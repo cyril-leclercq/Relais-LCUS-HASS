@@ -1,0 +1,21 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "USB Relay Roller Shutter",
+        "description": "Configure your USB relay controlled roller shutter.",
+        "data": {
+          "name": "Name",
+          "port": "USB Serial Port (e.g., /dev/ttyUSB0)",
+          "travel_time": "Travel time (seconds)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to connect to the serial port. Check that the device is plugged in and the port is correct."
+    },
+    "abort": {
+      "already_configured": "This port is already configured."
+    }
+  }
+}

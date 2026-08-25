@@ -2,13 +2,19 @@
 
 Contrôle de relais via port série USB pour volet roulant (montée/descente), avec intégration Home Assistant.
 
+[![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2023.1%2B-blue.svg)](https://www.home-assistant.io/)
+
 ## 🎯 Fonctionnalités
 
-- Contrôle de volet roulant via module de relais USB
-- Scripts indépendants pour monter, descendre et arrêter
-- Intégration complète avec Home Assistant
-- Protection anti-surchauffe avec durée maximale
-- Arrêt d'urgence automatique
+- **Contrôle de volet roulant** via module de relais USB
+- **Intégration HACS** - Installation en un clic
+- **Configuration UI** - Aucun YAML requis
+- **Support Docker/Swarm** - Fonctionne dans les conteneurs
+- **Scripts indépendants** pour monter, descendre et arrêter
+- **Protection anti-surchauffe** avec durée maximale
+- **Arrêt d'urgence** automatique
+- **Multilingue** - Français et anglais
 
 ## 📋 Prérequis
 
@@ -16,7 +22,19 @@ Contrôle de relais via port série USB pour volet roulant (montée/descente), a
 - pyserial
 - Module de relais USB (2 canaux minimum)
 - Home Assistant (optionnel, pour l'intégration domotique)
+� Via HACS (recommandé)
 
+**Voir le guide complet** : **[HACS_INSTALLATION.md](HACS_INSTALLATION.md)**
+
+1. Ouvrez **HACS** dans Home Assistant
+2. Allez dans **Intégrations**
+3. Ajoutez ce dépôt comme dépôt personnalisé
+4. Recherchez **"Volet Roulant Relais USB"**
+5. Cliquez sur **Télécharger**
+6. Redémarrez Home Assistant
+7. Ajoutez l'intégration via **Paramètres → Intégrations**
+
+### �
 ## 🚀 Installation
 
 ### 🐳 Home Assistant dans Docker/Swarm
@@ -76,7 +94,18 @@ arreter()
 # Monter le volet (30 secondes par défaut)
 python3 volet_monter.py
 
-# Monter pendant une durée personnalisée
+# Mon� Intégration HACS (recommandé)
+
+**Suivez le guide complet** : **[Installation HACS →](HACS_INSTALLATION.md)**
+
+L'intégration HACS offre :
+- ✅ **Configuration via l'interface** (UI) - Pas de YAML
+- ✅ **Mises à jour automatiques** via HACS
+- ✅ **Validation du port USB** avant configuration
+- ✅ **Support multilingue** (FR/EN)
+- ✅ **Gestion native** du cover par Home Assistant
+
+### �ter pendant une durée personnalisée
 python3 volet_monter.py 25
 
 # Descendre le volet
@@ -181,14 +210,28 @@ Le port est configurable via l'entité `input_text.volet_usb_port` (voir [homeas
 - **macOS** : `/dev/tty.usbserial-1110`
 - **Linux** : `/dev/ttyUSB0`
 - **Windows** : `COM3` (ou autre port COM)
-
-Pour trouver votre port USB :
-```bash
-# Linux/macOS
-ls /dev/tty* | grep -i usb
-
-# Ou avec Python
-python3 -m serial.tools.list_ports
+custom_components/           # Intégration HACS
+│   └── volet_relais_usb/
+│       ├── __init__.py
+│       ├── manifest.json
+│       ├── config_flow.py
+│       ├── cover.py
+│       ├── const.py
+│       ├── strings.json
+│       └── translations/
+│           ├── en.json
+│           └── fr.json
+├── relais.py                    # Module principal de contrôle
+├── volet_monter.py              # Script pour monter le volet
+├── volet_descendre.py           # Script pour descendre le volet
+├── volet_arreter.py             # Script pour arrêter le volet
+├── homeassistant_config.yaml    # Configuration Home Assistant (YAML legacy)
+├── install.sh                   # Script d'installation (local)
+├── install_docker.sh            # Script d'installation (Docker)
+├── docker-compose.yaml.example  # Exemple Docker Compose
+├── hacs.json                    # Configuration HACS
+├── info.md                      # Info HACS
+├── HACS_INSTALLATION.md         # Guide installation HACS
 ```
 
 ### Canaux de relais

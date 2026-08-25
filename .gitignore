@@ -11,6 +11,8 @@ env/
 venv/
 ENV/
 *.egg-info/
+build/
+dist/
 
 # IDE
 .vscode/
@@ -22,3 +24,14 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Home Assistant
+home-assistant.log
+home-assistant_v2.db
+*.db-shm
+*.db-wal
