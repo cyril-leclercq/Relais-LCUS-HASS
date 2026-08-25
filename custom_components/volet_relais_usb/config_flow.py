@@ -42,9 +42,9 @@ class VoletRelaisUSBConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     def async_get_options_flow(
         config_entry: config_entries.ConfigEntry,
-    ) -> "VoletRelaisUSBOptionsFlow":
+    ) -> config_entries.OptionsFlow:
         """Obtenir le flux d'options."""
-        return VoletRelaisUSBOptionsFlow(config_entry)
+        return VoletRelaisUSBOptionsFlow()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -96,10 +96,6 @@ class VoletRelaisUSBConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 class VoletRelaisUSBOptionsFlow(config_entries.OptionsFlow):
     """Flux d'options pour Volet Roulant Relais USB."""
-
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        """Initialiser le flux d'options."""
-        self.config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
