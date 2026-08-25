@@ -29,7 +29,7 @@
 ### 2. Pousser le code vers GitHub
 
 ```bash
-# Dans le répertoire /Users/zunix/Src/relais
+# Dans le répertoire du projet
 
 # Configurer le remote
 git remote add origin https://github.com/cyril-leclercq/Relais-LCUS-HASS.git

@@ -30,9 +30,9 @@ input_text:
 
 # ÉTAPE 1: Définir les commandes shell
 shell_command:
-  volet_monter: "RELAIS_USB_PORT={{ states('input_text.volet_usb_port') }} /opt/homebrew/bin/python3 /Users/zunix/Src/relais/volet_monter.py {{ duree|default(30) }}"
-  volet_descendre: "RELAIS_USB_PORT={{ states('input_text.volet_usb_port') }} /opt/homebrew/bin/python3 /Users/zunix/Src/relais/volet_descendre.py {{ duree|default(30) }}"
-  volet_arreter: "RELAIS_USB_PORT={{ states('input_text.volet_usb_port') }} /opt/homebrew/bin/python3 /Users/zunix/Src/relais/volet_arreter.py"
+  volet_monter: "RELAIS_USB_PORT={{ states('input_text.volet_usb_port') }} /usr/bin/python3 /home/user/Relais-LCUS-HASS/volet_monter.py {{ duree|default(30) }}"
+  volet_descendre: "RELAIS_USB_PORT={{ states('input_text.volet_usb_port') }} /usr/bin/python3 /home/user/Relais-LCUS-HASS/volet_descendre.py {{ duree|default(30) }}"
+  volet_arreter: "RELAIS_USB_PORT={{ states('input_text.volet_usb_port') }} /usr/bin/python3 /home/user/Relais-LCUS-HASS/volet_arreter.py"
 
 # ÉTAPE 2: Définir le cover (volet roulant)
 cover:

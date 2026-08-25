@@ -104,15 +104,15 @@ services:
 
 ```bash
 # Sur l'HÔTE
-cyril@odroid-m1s:~$ ls -l /dev/serial/by-id/
+user@serveur:~$ ls -l /dev/serial/by-id/
 usb-1a86_USB_Serial-if00-port0 -> ../../ttyUSB1
 
 # Dans le CONTENEUR
-cyril@odroid-m1s:~$ docker exec homeassistant ls -l /dev/lcus_relay
+user@serveur:~$ docker exec homeassistant ls -l /dev/lcus_relay
 crw-rw-rw- 1 root dialout 188, 1 Aug 25 19:45 /dev/lcus_relay
 
 # Test connexion
-cyril@odroid-m1s:~$ docker exec homeassistant python3 -c "import serial; s=serial.Serial('/dev/lcus_relay', 9600); print('✓ OK'); s.close()"
+user@serveur:~$ docker exec homeassistant python3 -c "import serial; s=serial.Serial('/dev/lcus_relay', 9600); print('✓ OK'); s.close()"
 ✓ OK
 ```
 
