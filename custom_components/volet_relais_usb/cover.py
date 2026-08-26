@@ -19,10 +19,18 @@ from .const import (
     DOMAIN,
     CONF_TRAVEL_TIME,
     CONF_INVERT_RELAY,
+    CONF_PULSE_MODE,
+    CONF_SHORT_PULSE_DURATION,
+    CONF_LONG_PULSE_DURATION,
     CANAL_MONTEE,
     CANAL_DESCENTE,
     DUREE_MAX,
     DEFAULT_BAUD_RATE,
+    DEFAULT_PULSE_MODE,
+    DEFAULT_SHORT_PULSE_DURATION,
+    DEFAULT_LONG_PULSE_DURATION,
+    PULSE_MODE_SHORT,
+    PULSE_MODE_LONG,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -46,8 +54,28 @@ async def async_setup_entry(
         CONF_INVERT_RELAY,
         config_entry.data.get(CONF_INVERT_RELAY, False)
     )
+    pulse_mode = config_entry.options.get(
+        CONF_PULSE_MODE,
+        config_entry.data.get(CONF_PULSE_MODE, DEFAULT_PULSE_MODE)
+    )
+    short_pulse_duration = config_entry.options.get(
+        CONF_SHORT_PULSE_DURATION,
+        config_entry.data.get(CONF_SHORT_PULSE_DURATION, DEFAULT_SHORT_PULSE_DURATION)
+    )
+    long_pulse_duration = config_entry.options.get(
+        CONF_LONG_PULSE_DURATION,
+        config_entry.data.get(CONF_LONG_PULSE_DURATION, DEFAULT_LONG_PULSE_DURATION)
+    )
 
-    cover = VoletRelaisUSBCover(name, port, travel_time, invert_relay)
+    cover = VoletRelaisUSBCover(
+        name, 
+        port, 
+        travel_time, 
+        invert_relay,
+        pulse_mode,
+        short_pulse_duration,
+        long_pulse_duration
+    )
     
     # Ajouter un listener pour les changements d'options
     config_entry.async_on_unload(
@@ -70,13 +98,25 @@ class VoletRelaisUSBCover(CoverEntity):
         CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.STOP
     )
 
-    def __init__(self, name: str, port: str, travel_time: int, invert_relay: bool = False) -> None:
+    def __init__(
+        self, 
+        name: str, 
+        port: str, 
+        travel_time: int, 
+        invert_relay: bool = False,
+        pulse_mode: str = DEFAULT_PULSE_MODE,
+        short_pulse_duration: float = DEFAULT_SHORT_PULSE_DURATION,
+        long_pulse_duration: int = DEFAULT_LONG_PULSE_DURATION
+    ) -> None:
         """Initialisation du volet."""
         self._attr_name = name
         self._attr_unique_id = f"{DOMAIN}_{port.replace('/', '_')}"
         self._port = port
         self._travel_time = travel_time
         self._invert_relay = invert_relay
+        self._pulse_mode = pulse_mode
+        self._short_pulse_duration = short_pulse_duration
+        self._long_pulse_duration = long_pulse_duration
         self._serial_port = None
         self._is_opening = False
         self._is_closing = False
@@ -146,7 +186,13 @@ class VoletRelaisUSBCover(CoverEntity):
 
     async def async_open_cover(self, **kwargs: Any) -> None:
         """Ouvrir le volet."""
-        _LOGGER.info("Ouverture du volet pendant %d secondes", self._travel_time)
+        # Déterminer la durée selon le mode
+        if self._pulse_mode == PULSE_MODE_SHORT:
+            duration = self._short_pulse_duration
+            _LOGGER.info("Ouverture du volet - Mode impulsion courte: %.2f secondes", duration)
+        else:
+            duration = self._long_pulse_duration
+            _LOGGER.info("Ouverture du volet - Mode maintenu: %d secondes", duration)
         
         await self.hass.async_add_executor_job(self._stop_tous_relais)
         await asyncio.sleep(0.1)
@@ -158,7 +204,7 @@ class VoletRelaisUSBCover(CoverEntity):
             await self.hass.async_add_executor_job(
                 self._relais, self._canal_montee, True
             )
-            await asyncio.sleep(min(self._travel_time, DUREE_MAX))
+            await asyncio.sleep(min(duration, DUREE_MAX))
         finally:
             await self.hass.async_add_executor_job(
                 self._relais, self._canal_montee, False
@@ -168,7 +214,13 @@ class VoletRelaisUSBCover(CoverEntity):
 
     async def async_close_cover(self, **kwargs: Any) -> None:
         """Fermer le volet."""
-        _LOGGER.info("Fermeture du volet pendant %d secondes", self._travel_time)
+        # Déterminer la durée selon le mode
+        if self._pulse_mode == PULSE_MODE_SHORT:
+            duration = self._short_pulse_duration
+            _LOGGER.info("Fermeture du volet - Mode impulsion courte: %.2f secondes", duration)
+        else:
+            duration = self._long_pulse_duration
+            _LOGGER.info("Fermeture du volet - Mode maintenu: %d secondes", duration)
         
         await self.hass.async_add_executor_job(self._stop_tous_relais)
         await asyncio.sleep(0.1)
@@ -180,7 +232,7 @@ class VoletRelaisUSBCover(CoverEntity):
             await self.hass.async_add_executor_job(
                 self._relais, self._canal_descente, True
             )
-            await asyncio.sleep(min(self._travel_time, DUREE_MAX))
+            await asyncio.sleep(min(duration, DUREE_MAX))
         finally:
             await self.hass.async_add_executor_job(
                 self._relais, self._canal_descente, False

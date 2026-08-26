@@ -3,12 +3,21 @@
     "step": {
       "user": {
         "title": "USB Relay Roller Shutter",
-        "description": "Configure your USB relay controlled roller shutter.",
+        "description": "Configure your USB relay controlled roller shutter.\n\n**Short Pulse Mode** ⚡\nActivates the relay briefly (0.2-1s), like a push button. Ideal for motorized shutters with built-in control electronics.\n\n**Sustained Mode** ⏱️\nKeeps the relay active for the entire duration (2s-2min). For shutters requiring continuous power during movement.",
         "data": {
           "name": "Name",
           "port": "USB Serial Port (e.g., /dev/ttyUSB0)",
-          "travel_time": "Travel time (seconds)",
+          "pulse_mode": "Pulse mode",
+          "short_pulse_duration": "Short pulse duration (seconds)",
+          "long_pulse_duration": "Sustained duration (seconds)",
+          "travel_time": "Total travel time (seconds)",
           "invert_relay": "Invert relay direction (up/down)"
+        },
+        "data_description": {
+          "pulse_mode": "Choose the relay operating mode",
+          "short_pulse_duration": "Short signal duration (0.2 to 1 second)",
+          "long_pulse_duration": "Extended activation duration (2 seconds to 2 minutes)",
+          "travel_time": "Estimated time for a complete shutter run"
         }
       }
     },
@@ -23,10 +32,19 @@
     "step": {
       "init": {
         "title": "Roller shutter options",
-        "description": "Modify your roller shutter settings.",
+        "description": "Modify your roller shutter settings.\n\n**Short Pulse Mode** ⚡\nActivates the relay briefly (0.2-1s), like a push button. Ideal for motorized shutters with built-in control electronics.\n\n**Sustained Mode** ⏱️\nKeeps the relay active for the entire duration (2s-2min). For shutters requiring continuous power during movement.",
         "data": {
-          "travel_time": "Travel time (seconds)",
+          "pulse_mode": "Pulse mode",
+          "short_pulse_duration": "Short pulse duration (seconds)",
+          "long_pulse_duration": "Sustained duration (seconds)",
+          "travel_time": "Total travel time (seconds)",
           "invert_relay": "Invert relay direction (up/down)"
+        },
+        "data_description": {
+          "pulse_mode": "Choose the relay operating mode",
+          "short_pulse_duration": "Short signal duration (0.2 to 1 second)",
+          "long_pulse_duration": "Extended activation duration (2 seconds to 2 minutes)",
+          "travel_time": "Estimated time for a complete shutter run"
         }
       }
     }

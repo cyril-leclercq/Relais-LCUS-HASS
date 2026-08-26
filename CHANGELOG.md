@@ -7,6 +7,18 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Non publié]
 
+### Ajouté
+- ⚡ **Mode d'impulsion configurable**
+  - Mode "Impulsion courte" (0.2-1s) pour commandes momentanées
+  - Mode "Maintenu" (2s-2min) pour course complète du volet
+  - Sliders de configuration pour ajuster les durées
+  - UI professionnelle avec descriptions détaillées
+  - Explications des différences entre les modes
+  - Documentation complète (MODE_IMPULSION.md)
+  - Guide de migration pour utilisateurs existants (MIGRATION_MODE_IMPULSION.md)
+  - Paramètres identiques en installation et configuration
+  - Support des traductions FR/EN
+
 ### À venir
 - Support de plusieurs volets (instances multiples)
 - Calibration automatique du temps de course

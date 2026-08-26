@@ -3,12 +3,21 @@
     "step": {
       "user": {
         "title": "Volet Roulant Relais USB",
-        "description": "Configurez votre volet roulant contrôlé par relais USB.",
+        "description": "Configurez votre volet roulant contrôlé par relais USB.\n\n**Mode Impulsion Courte** ⚡\nActive le relais brièvement (0.2-1s), comme un bouton poussoir. Idéal pour volets motorisés avec électronique de contrôle intégrée.\n\n**Mode Maintenu** ⏱️\nGarde le relais activé pendant toute la durée (2s-2min). Pour volets nécessitant une alimentation continue pendant le mouvement.",
         "data": {
           "name": "Nom",
           "port": "Port série USB (ex: /dev/ttyUSB0)",
-          "travel_time": "Temps de course (secondes)",
+          "pulse_mode": "Mode d'impulsion",
+          "short_pulse_duration": "Durée impulsion courte (secondes)",
+          "long_pulse_duration": "Durée maintenu (secondes)",
+          "travel_time": "Temps de course total (secondes)",
           "invert_relay": "Inverser le sens des relais (monter/descendre)"
+        },
+        "data_description": {
+          "pulse_mode": "Choisissez le mode de fonctionnement du relais",
+          "short_pulse_duration": "Durée du signal court (0.2 à 1 seconde)",
+          "long_pulse_duration": "Durée d'activation prolongée (2 secondes à 2 minutes)",
+          "travel_time": "Temps estimé pour une course complète du volet"
         }
       }
     },
@@ -23,10 +32,19 @@
     "step": {
       "init": {
         "title": "Options du volet roulant",
-        "description": "Modifiez les paramètres de votre volet roulant.",
+        "description": "Modifiez les paramètres de votre volet roulant.\n\n**Mode Impulsion Courte** ⚡\nActive le relais brièvement (0.2-1s), comme un bouton poussoir. Idéal pour volets motorisés avec électronique de contrôle intégrée.\n\n**Mode Maintenu** ⏱️\nGarde le relais activé pendant toute la durée (2s-2min). Pour volets nécessitant une alimentation continue pendant le mouvement.",
         "data": {
-          "travel_time": "Temps de course (secondes)",
+          "pulse_mode": "Mode d'impulsion",
+          "short_pulse_duration": "Durée impulsion courte (secondes)",
+          "long_pulse_duration": "Durée maintenu (secondes)",
+          "travel_time": "Temps de course total (secondes)",
           "invert_relay": "Inverser le sens des relais (monter/descendre)"
+        },
+        "data_description": {
+          "pulse_mode": "Choisissez le mode de fonctionnement du relais",
+          "short_pulse_duration": "Durée du signal court (0.2 à 1 seconde)",
+          "long_pulse_duration": "Durée d'activation prolongée (2 secondes à 2 minutes)",
+          "travel_time": "Temps estimé pour une course complète du volet"
         }
       }
     }
