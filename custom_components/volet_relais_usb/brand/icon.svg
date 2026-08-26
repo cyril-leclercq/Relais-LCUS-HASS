@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="slat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFB74D"/>
+      <stop offset="100%" stop-color="#F57C00"/>
+    </linearGradient>
+  </defs>
+
+  <!-- fenêtre / cadre -->
+  <rect x="30" y="24" width="196" height="208" rx="22" fill="#90CAF9" stroke="#263238" stroke-width="13"/>
+
+  <!-- lames du volet roulant, mi-fermé -->
+  <g>
+    <rect x="39" y="31" width="178" height="16" rx="5" fill="url(#slat)"/>
+    <rect x="39" y="52" width="178" height="16" rx="5" fill="url(#slat)"/>
+    <rect x="39" y="73" width="178" height="16" rx="5" fill="url(#slat)"/>
+    <rect x="39" y="94" width="178" height="16" rx="5" fill="url(#slat)"/>
+  </g>
+
+  <!-- prise USB-A, littérale et lisible en petit format -->
+  <g stroke="#263238" stroke-width="9" stroke-linejoin="round" stroke-linecap="round" fill="#ECEFF1">
+    <rect x="150" y="150" width="58" height="34" rx="4"/>
+    <rect x="163" y="184" width="32" height="26"/>
+    <line x1="171" y1="159" x2="171" y2="175"/>
+    <line x1="187" y1="159" x2="187" y2="175"/>
+  </g>
+</svg>
