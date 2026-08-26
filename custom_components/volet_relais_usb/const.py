@@ -7,7 +7,7 @@ DEFAULT_NAME = "Volet Roulant"
 DEFAULT_PORT = "/dev/ttyUSB0"
 DEFAULT_BAUD_RATE = 9600
 DEFAULT_PULSE_MODE = "short"
-DEFAULT_SHORT_PULSE_DURATION = 500  # millisecondes
+DEFAULT_SHORT_PULSE_DURATION = 300  # millisecondes
 DEFAULT_LONG_PULSE_DURATION = 30  # secondes
 
 # Configuration
@@ -21,8 +21,9 @@ PULSE_MODE_SHORT = "short"
 PULSE_MODE_LONG = "long"
 
 # Plages de durée
-SHORT_PULSE_MIN = 50  # millisecondes
+SHORT_PULSE_MIN = 100  # millisecondes
 SHORT_PULSE_MAX = 600  # millisecondes
+SHORT_PULSE_STEP = 100  # millisecondes
 LONG_PULSE_MIN = 2  # secondes
 LONG_PULSE_MAX = 120  # secondes
 

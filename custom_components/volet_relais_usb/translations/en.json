@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "USB Relay Roller Shutter",
-        "description": "Configure your USB relay controlled roller shutter.\n\n**Short Pulse Mode** ⚡\nActivates the relay briefly (50-600 ms), like a push button. Ideal for motorized shutters with built-in control electronics.\n\n**Sustained Mode** ⏱️\nKeeps the relay active for the entire duration (2s-2min). For shutters requiring continuous power during movement.\n\nThe exact duration for the chosen mode will be asked in the next step.",
+        "description": "Configure your USB relay controlled roller shutter.\n\n**Short Pulse Mode** ⚡\nActivates the relay briefly (100-600 ms), like a push button. Ideal for motorized shutters with built-in control electronics.\n\n**Sustained Mode** ⏱️\nKeeps the relay active for the entire duration (2s-2min). For shutters requiring continuous power during movement.\n\nThe exact duration for the chosen mode will be asked in the next step.",
         "data": {
           "name": "Name",
           "port": "USB Serial Port (e.g., /dev/ttyUSB0)",
@@ -21,7 +21,7 @@
           "short_pulse_duration": "Short pulse duration (ms)"
         },
         "data_description": {
-          "short_pulse_duration": "Short signal duration (50 to 600 milliseconds)"
+          "short_pulse_duration": "Short signal duration (100 to 600 milliseconds)"
         }
       },
       "pulse_long": {
@@ -46,7 +46,7 @@
     "step": {
       "init": {
         "title": "Roller shutter options",
-        "description": "Modify your roller shutter settings.\n\n**Short Pulse Mode** ⚡\nActivates the relay briefly (50-600 ms), like a push button. Ideal for motorized shutters with built-in control electronics.\n\n**Sustained Mode** ⏱️\nKeeps the relay active for the entire duration (2s-2min). For shutters requiring continuous power during movement.\n\nThe exact duration for the chosen mode will be asked in the next step.",
+        "description": "Modify your roller shutter settings.\n\n**Short Pulse Mode** ⚡\nActivates the relay briefly (100-600 ms), like a push button. Ideal for motorized shutters with built-in control electronics.\n\n**Sustained Mode** ⏱️\nKeeps the relay active for the entire duration (2s-2min). For shutters requiring continuous power during movement.\n\nThe exact duration for the chosen mode will be asked in the next step.",
         "data": {
           "pulse_mode": "Pulse mode",
           "invert_relay": "Invert relay direction (up/down)"
@@ -62,7 +62,7 @@
           "short_pulse_duration": "Short pulse duration (ms)"
         },
         "data_description": {
-          "short_pulse_duration": "Short signal duration (50 to 600 milliseconds)"
+          "short_pulse_duration": "Short signal duration (100 to 600 milliseconds)"
         }
       },
       "pulse_long": {

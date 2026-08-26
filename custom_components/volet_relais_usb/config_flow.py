@@ -10,6 +10,11 @@ from homeassistant.const import CONF_NAME, CONF_PORT
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.selector import (
+    NumberSelector,
+    NumberSelectorConfig,
+    NumberSelectorMode,
+)
 
 from .const import (
     DOMAIN,
@@ -26,6 +31,7 @@ from .const import (
     PULSE_MODE_LONG,
     SHORT_PULSE_MIN,
     SHORT_PULSE_MAX,
+    SHORT_PULSE_STEP,
     LONG_PULSE_MIN,
     LONG_PULSE_MAX,
     normalize_short_pulse_ms,
@@ -34,9 +40,19 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 PULSE_MODE_LABELS = {
-    PULSE_MODE_SHORT: "Impulsion courte (50-600 ms) - Pour commandes momentanées",
+    PULSE_MODE_SHORT: "Impulsion courte (100-600 ms) - Pour commandes momentanées",
     PULSE_MODE_LONG: "Maintenu (2s-2min) - Pour course complète du volet",
 }
+
+SHORT_PULSE_SELECTOR = NumberSelector(
+    NumberSelectorConfig(
+        min=SHORT_PULSE_MIN,
+        max=SHORT_PULSE_MAX,
+        step=SHORT_PULSE_STEP,
+        mode=NumberSelectorMode.BOX,
+        unit_of_measurement="ms",
+    )
+)
 
 
 def validate_serial_port(port: str) -> bool:
@@ -120,7 +136,7 @@ class VoletRelaisUSBConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             {
                 vol.Required(
                     CONF_SHORT_PULSE_DURATION, default=default_short_pulse
-                ): vol.All(vol.Coerce(int), vol.Range(min=SHORT_PULSE_MIN, max=SHORT_PULSE_MAX)),
+                ): SHORT_PULSE_SELECTOR,
             }
         )
 
@@ -218,7 +234,7 @@ class VoletRelaisUSBOptionsFlow(config_entries.OptionsFlow):
             {
                 vol.Required(
                     CONF_SHORT_PULSE_DURATION, default=current_short_pulse
-                ): vol.All(vol.Coerce(int), vol.Range(min=SHORT_PULSE_MIN, max=SHORT_PULSE_MAX)),
+                ): SHORT_PULSE_SELECTOR,
             }
         )
 

@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Volet Roulant Relais USB",
-        "description": "Configurez votre volet roulant contrôlé par relais USB.\n\n**Mode Impulsion Courte** ⚡\nActive le relais brièvement (50-600 ms), comme un bouton poussoir. Idéal pour volets motorisés avec électronique de contrôle intégrée.\n\n**Mode Maintenu** ⏱️\nGarde le relais activé pendant toute la durée (2s-2min). Pour volets nécessitant une alimentation continue pendant le mouvement.\n\nLa durée précise du mode choisi sera demandée à l'étape suivante.",
+        "description": "Configurez votre volet roulant contrôlé par relais USB.\n\n**Mode Impulsion Courte** ⚡\nActive le relais brièvement (100-600 ms), comme un bouton poussoir. Idéal pour volets motorisés avec électronique de contrôle intégrée.\n\n**Mode Maintenu** ⏱️\nGarde le relais activé pendant toute la durée (2s-2min). Pour volets nécessitant une alimentation continue pendant le mouvement.\n\nLa durée précise du mode choisi sera demandée à l'étape suivante.",
         "data": {
           "name": "Nom",
           "port": "Port série USB (ex: /dev/ttyUSB0)",
@@ -21,7 +21,7 @@
           "short_pulse_duration": "Durée impulsion courte (ms)"
         },
         "data_description": {
-          "short_pulse_duration": "Durée du signal court (50 à 600 millisecondes)"
+          "short_pulse_duration": "Durée du signal court (100 à 600 millisecondes)"
         }
       },
       "pulse_long": {
@@ -46,7 +46,7 @@
     "step": {
       "init": {
         "title": "Options du volet roulant",
-        "description": "Modifiez les paramètres de votre volet roulant.\n\n**Mode Impulsion Courte** ⚡\nActive le relais brièvement (50-600 ms), comme un bouton poussoir. Idéal pour volets motorisés avec électronique de contrôle intégrée.\n\n**Mode Maintenu** ⏱️\nGarde le relais activé pendant toute la durée (2s-2min). Pour volets nécessitant une alimentation continue pendant le mouvement.\n\nLa durée précise du mode choisi sera demandée à l'étape suivante.",
+        "description": "Modifiez les paramètres de votre volet roulant.\n\n**Mode Impulsion Courte** ⚡\nActive le relais brièvement (100-600 ms), comme un bouton poussoir. Idéal pour volets motorisés avec électronique de contrôle intégrée.\n\n**Mode Maintenu** ⏱️\nGarde le relais activé pendant toute la durée (2s-2min). Pour volets nécessitant une alimentation continue pendant le mouvement.\n\nLa durée précise du mode choisi sera demandée à l'étape suivante.",
         "data": {
           "pulse_mode": "Mode d'impulsion",
           "invert_relay": "Inverser le sens des relais (monter/descendre)"
@@ -62,7 +62,7 @@
           "short_pulse_duration": "Durée impulsion courte (ms)"
         },
         "data_description": {
-          "short_pulse_duration": "Durée du signal court (50 à 600 millisecondes)"
+          "short_pulse_duration": "Durée du signal court (100 à 600 millisecondes)"
         }
       },
       "pulse_long": {

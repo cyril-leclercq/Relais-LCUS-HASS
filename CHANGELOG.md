@@ -33,6 +33,12 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   - Plage réduite et plus précise : 50 à 600 ms (au lieu de 0.2 à 1 seconde), valeur par défaut inchangée (500 ms)
   - Les configurations existantes (stockées en secondes) sont automatiquement converties en millisecondes à la volée, sans action requise
 
+### Amélioré
+- 📝 **Logs plus explicites à chaque actuation du relais**
+  - Chaque ouverture, fermeture et arrêt indique désormais le mode actif et sa durée : `mode impulsion (500 ms)` ou `mode continu (30 s)`
+- 🏷️ **Mode d'impulsion visible en attribut d'entité**
+  - Nouveaux attributs `pulse_mode` et `pulse_duration` sur l'entité cover, visibles dans la popup "Plus d'infos" et affichables sur un dashboard
+
 ### Supprimé
 - 🗑️ **Paramètre "Temps de course total"**
   - Retiré du formulaire de configuration et des options : il n'était jamais lu par le code (aucun calcul de position n'en dépendait)

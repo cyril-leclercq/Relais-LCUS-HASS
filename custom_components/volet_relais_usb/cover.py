@@ -163,6 +163,12 @@ class VoletRelaisUSBCover(CoverEntity):
         self._relais(self._canal_montee, False)
         self._relais(self._canal_descente, False)
 
+    def _mode_description(self) -> str:
+        """Décrit le mode d'impulsion actif et sa durée, pour les logs."""
+        if self._pulse_mode == PULSE_MODE_SHORT:
+            return f"mode impulsion ({self._short_pulse_duration_ms} ms)"
+        return f"mode continu ({self._long_pulse_duration} s)"
+
     @property
     def is_opening(self) -> bool:
         """Retourne si le volet est en train de s'ouvrir."""
@@ -178,6 +184,19 @@ class VoletRelaisUSBCover(CoverEntity):
         """Retourne si le volet est fermé (None = inconnu)."""
         return None
 
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Attributs supplémentaires : mode d'impulsion actif et sa durée."""
+        if self._pulse_mode == PULSE_MODE_SHORT:
+            return {
+                "pulse_mode": "Impulsion courte",
+                "pulse_duration": f"{self._short_pulse_duration_ms} ms",
+            }
+        return {
+            "pulse_mode": "Maintenu",
+            "pulse_duration": f"{self._long_pulse_duration} s",
+        }
+
     async def async_open_cover(self, **kwargs: Any) -> None:
         """Ouvrir le volet."""
         await self._demarrer_mouvement(self._canal_montee, ouverture=True)
@@ -191,16 +210,13 @@ class VoletRelaisUSBCover(CoverEntity):
         # Déterminer la durée selon le mode
         if self._pulse_mode == PULSE_MODE_SHORT:
             duration = self._short_pulse_duration_ms / 1000
-            _LOGGER.info(
-                "%s du volet - Mode impulsion courte: %d ms",
-                "Ouverture" if ouverture else "Fermeture", self._short_pulse_duration_ms
-            )
         else:
             duration = self._long_pulse_duration
-            _LOGGER.info(
-                "%s du volet - Mode maintenu: %d secondes",
-                "Ouverture" if ouverture else "Fermeture", duration
-            )
+
+        _LOGGER.info(
+            "%s du volet - %s",
+            "Ouverture" if ouverture else "Fermeture", self._mode_description()
+        )
 
         # Arrêter proprement un éventuel mouvement en cours avant d'en lancer un nouveau
         await self._envoyer_arret()
@@ -229,6 +245,8 @@ class VoletRelaisUSBCover(CoverEntity):
 
     async def _envoyer_arret(self) -> None:
         """Envoyer le signal d'arrêt approprié selon le mode d'impulsion."""
+        _LOGGER.info("Arrêt du volet - %s", self._mode_description())
+
         if self._pulse_mode == PULSE_MODE_SHORT and self._canal_actif is not None:
             # Ces moteurs s'arrêtent par un nouvel appui sur le bouton déjà
             # actif (montée/montée ou descente/descente) : un simple coupure
@@ -242,7 +260,6 @@ class VoletRelaisUSBCover(CoverEntity):
 
     async def async_stop_cover(self, **kwargs: Any) -> None:
         """Arrêter le volet."""
-        _LOGGER.info("Arrêt du volet")
         await self._envoyer_arret()
         self._is_opening = False
         self._is_closing = False

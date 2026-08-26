@@ -1,7 +1,7 @@
 # Volet Roulant Relais USB - Intégration Home Assistant
 
-[\![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
-[\![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2023.1%2B-blue.svg)](https://www.home-assistant.io/)
+[![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2023.1%2B-blue.svg)](https://www.home-assistant.io/)
 
 Contrôlez votre volet roulant motorisé via un module relais USB 2 canaux dans Home Assistant.
 
