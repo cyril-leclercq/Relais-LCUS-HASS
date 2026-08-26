@@ -17,7 +17,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
     DOMAIN,
-    CONF_TRAVEL_TIME,
     CONF_INVERT_RELAY,
     CONF_PULSE_MODE,
     CONF_SHORT_PULSE_DURATION,
@@ -31,6 +30,7 @@ from .const import (
     DEFAULT_LONG_PULSE_DURATION,
     PULSE_MODE_SHORT,
     PULSE_MODE_LONG,
+    normalize_short_pulse_ms,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -46,10 +46,6 @@ async def async_setup_entry(
     port = config_entry.data[CONF_PORT]
     
     # Utiliser les options en priorité, sinon les données de configuration
-    travel_time = config_entry.options.get(
-        CONF_TRAVEL_TIME,
-        config_entry.data.get(CONF_TRAVEL_TIME)
-    )
     invert_relay = config_entry.options.get(
         CONF_INVERT_RELAY,
         config_entry.data.get(CONF_INVERT_RELAY, False)
@@ -58,9 +54,11 @@ async def async_setup_entry(
         CONF_PULSE_MODE,
         config_entry.data.get(CONF_PULSE_MODE, DEFAULT_PULSE_MODE)
     )
-    short_pulse_duration = config_entry.options.get(
-        CONF_SHORT_PULSE_DURATION,
-        config_entry.data.get(CONF_SHORT_PULSE_DURATION, DEFAULT_SHORT_PULSE_DURATION)
+    short_pulse_duration = normalize_short_pulse_ms(
+        config_entry.options.get(
+            CONF_SHORT_PULSE_DURATION,
+            config_entry.data.get(CONF_SHORT_PULSE_DURATION, DEFAULT_SHORT_PULSE_DURATION)
+        )
     )
     long_pulse_duration = config_entry.options.get(
         CONF_LONG_PULSE_DURATION,
@@ -68,9 +66,8 @@ async def async_setup_entry(
     )
 
     cover = VoletRelaisUSBCover(
-        name, 
-        port, 
-        travel_time, 
+        name,
+        port,
         invert_relay,
         pulse_mode,
         short_pulse_duration,
@@ -99,27 +96,26 @@ class VoletRelaisUSBCover(CoverEntity):
     )
 
     def __init__(
-        self, 
-        name: str, 
-        port: str, 
-        travel_time: int, 
+        self,
+        name: str,
+        port: str,
         invert_relay: bool = False,
         pulse_mode: str = DEFAULT_PULSE_MODE,
-        short_pulse_duration: float = DEFAULT_SHORT_PULSE_DURATION,
+        short_pulse_duration: int = DEFAULT_SHORT_PULSE_DURATION,
         long_pulse_duration: int = DEFAULT_LONG_PULSE_DURATION
     ) -> None:
         """Initialisation du volet."""
         self._attr_name = name
         self._attr_unique_id = f"{DOMAIN}_{port.replace('/', '_')}"
         self._port = port
-        self._travel_time = travel_time
         self._invert_relay = invert_relay
         self._pulse_mode = pulse_mode
-        self._short_pulse_duration = short_pulse_duration
+        self._short_pulse_duration_ms = short_pulse_duration
         self._long_pulse_duration = long_pulse_duration
         self._serial_port = None
         self._is_opening = False
         self._is_closing = False
+        self._canal_actif: int | None = None
         
         # Définir les canaux selon l'inversion
         if self._invert_relay:
@@ -163,11 +159,9 @@ class VoletRelaisUSBCover(CoverEntity):
             _LOGGER.error("Erreur lors de l'envoi de la commande: %s", err)
 
     def _stop_tous_relais(self) -> None:
-        """Arrêter tous les relais."""
+        """Couper les relais (sans envoyer d'impulsion d'arrêt au moteur)."""
         self._relais(self._canal_montee, False)
         self._relais(self._canal_descente, False)
-        self._is_opening = False
-        self._is_closing = False
 
     @property
     def is_opening(self) -> bool:
@@ -186,64 +180,73 @@ class VoletRelaisUSBCover(CoverEntity):
 
     async def async_open_cover(self, **kwargs: Any) -> None:
         """Ouvrir le volet."""
-        # Déterminer la durée selon le mode
-        if self._pulse_mode == PULSE_MODE_SHORT:
-            duration = self._short_pulse_duration
-            _LOGGER.info("Ouverture du volet - Mode impulsion courte: %.2f secondes", duration)
-        else:
-            duration = self._long_pulse_duration
-            _LOGGER.info("Ouverture du volet - Mode maintenu: %d secondes", duration)
-        
-        await self.hass.async_add_executor_job(self._stop_tous_relais)
-        await asyncio.sleep(0.1)
-        
-        self._is_opening = True
-        self.async_write_ha_state()
-        
-        try:
-            await self.hass.async_add_executor_job(
-                self._relais, self._canal_montee, True
-            )
-            await asyncio.sleep(min(duration, DUREE_MAX))
-        finally:
-            await self.hass.async_add_executor_job(
-                self._relais, self._canal_montee, False
-            )
-            self._is_opening = False
-            self.async_write_ha_state()
+        await self._demarrer_mouvement(self._canal_montee, ouverture=True)
 
     async def async_close_cover(self, **kwargs: Any) -> None:
         """Fermer le volet."""
+        await self._demarrer_mouvement(self._canal_descente, ouverture=False)
+
+    async def _demarrer_mouvement(self, canal: int, ouverture: bool) -> None:
+        """Déclencher le mouvement d'ouverture ou de fermeture sur un canal."""
         # Déterminer la durée selon le mode
         if self._pulse_mode == PULSE_MODE_SHORT:
-            duration = self._short_pulse_duration
-            _LOGGER.info("Fermeture du volet - Mode impulsion courte: %.2f secondes", duration)
+            duration = self._short_pulse_duration_ms / 1000
+            _LOGGER.info(
+                "%s du volet - Mode impulsion courte: %d ms",
+                "Ouverture" if ouverture else "Fermeture", self._short_pulse_duration_ms
+            )
         else:
             duration = self._long_pulse_duration
-            _LOGGER.info("Fermeture du volet - Mode maintenu: %d secondes", duration)
-        
-        await self.hass.async_add_executor_job(self._stop_tous_relais)
-        await asyncio.sleep(0.1)
-        
-        self._is_closing = True
-        self.async_write_ha_state()
-        
-        try:
-            await self.hass.async_add_executor_job(
-                self._relais, self._canal_descente, True
+            _LOGGER.info(
+                "%s du volet - Mode maintenu: %d secondes",
+                "Ouverture" if ouverture else "Fermeture", duration
             )
+
+        # Arrêter proprement un éventuel mouvement en cours avant d'en lancer un nouveau
+        await self._envoyer_arret()
+        await asyncio.sleep(0.1)
+
+        self._is_opening = ouverture
+        self._is_closing = not ouverture
+        self._canal_actif = canal
+        self.async_write_ha_state()
+
+        try:
+            await self.hass.async_add_executor_job(self._relais, canal, True)
             await asyncio.sleep(min(duration, DUREE_MAX))
         finally:
-            await self.hass.async_add_executor_job(
-                self._relais, self._canal_descente, False
-            )
-            self._is_closing = False
+            await self.hass.async_add_executor_job(self._relais, canal, False)
+            if self._pulse_mode == PULSE_MODE_LONG:
+                # Mode maintenu : le relais couvre toute la course, le mouvement
+                # est donc terminé une fois la durée écoulée.
+                self._is_opening = False
+                self._is_closing = False
+                self._canal_actif = None
+            # En mode impulsion courte, le moteur continue de bouger seul après
+            # le relâchement du bouton : l'état n'est réinitialisé qu'à l'arrêt
+            # effectif (async_stop_cover), pas ici.
             self.async_write_ha_state()
+
+    async def _envoyer_arret(self) -> None:
+        """Envoyer le signal d'arrêt approprié selon le mode d'impulsion."""
+        if self._pulse_mode == PULSE_MODE_SHORT and self._canal_actif is not None:
+            # Ces moteurs s'arrêtent par un nouvel appui sur le bouton déjà
+            # actif (montée/montée ou descente/descente) : un simple coupure
+            # du relais (déjà retombé depuis longtemps) ne suffit pas.
+            canal = self._canal_actif
+            await self.hass.async_add_executor_job(self._relais, canal, True)
+            await asyncio.sleep(self._short_pulse_duration_ms / 1000)
+            await self.hass.async_add_executor_job(self._relais, canal, False)
+        else:
+            await self.hass.async_add_executor_job(self._stop_tous_relais)
 
     async def async_stop_cover(self, **kwargs: Any) -> None:
         """Arrêter le volet."""
         _LOGGER.info("Arrêt du volet")
-        await self.hass.async_add_executor_job(self._stop_tous_relais)
+        await self._envoyer_arret()
+        self._is_opening = False
+        self._is_closing = False
+        self._canal_actif = None
         self.async_write_ha_state()
 
     async def async_will_remove_from_hass(self) -> None:

@@ -5,6 +5,8 @@
 
 Contrôlez votre volet roulant motorisé via un module relais USB 2 canaux dans Home Assistant.
 
+<p align="center"><img src="docs/img/LCUS-2.jpg" alt="Module relais USB LCUS-2" width="300"></p>
+
 ## ✨ Fonctionnalités
 
 - ✅ **Installation via HACS** en un clic
@@ -54,7 +56,7 @@ rm -rf temp
 3. Configurez :
    - **Nom** : Nom de votre volet (ex: "Volet Salon")
    - **Port USB** : Voir section ci-dessous
-   - **Temps de course** : Durée en secondes pour ouvrir/fermer complètement
+   - **Mode d'impulsion** : "Impulsion courte" ou "Maintenu" — la durée précise est demandée à l'étape suivante (voir [MODE_IMPULSION.md](docs/MODE_IMPULSION.md))
 
 ### 2. Identifier le port USB
 
@@ -222,6 +224,12 @@ Reconfigurer le temps de course :
 - Module relais USB 2 canaux (9600 bauds)
 - Volet roulant motorisé
 - Home Assistant 2023.1+
+
+### Volet radio (io-homecontrol / RTS)
+
+Si votre volet n'est pas piloté par fil mais par un moteur radio (Somfy io ou RTS), le relais ne se branche pas directement sur le moteur mais sur un **émetteur filaire** placé derrière votre point de commande (ex. **Somfy IZYMO Transmitter io**, réf. 5135163), qui retransmet l'appui en ordre radio. Voir le guide dédié : **[docs/SOMFY_IZYMO.md](docs/SOMFY_IZYMO.md)**.
+
+<p align="center"><img src="docs/img/somfy-izymo-5135163.jpg" alt="Somfy IZYMO Transmitter io réf. 5135163" width="300"></p>
 
 ---
 

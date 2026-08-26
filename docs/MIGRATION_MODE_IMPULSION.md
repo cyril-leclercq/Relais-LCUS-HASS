@@ -10,7 +10,7 @@ Si vous avez déjà installé l'intégration Volet Roulant Relais USB avant l'aj
 
 L'intégration propose maintenant deux modes de fonctionnement :
 
-1. **Mode Impulsion Courte** (0.2 - 1 seconde)
+1. **Mode Impulsion Courte** (50 - 600 ms)
    - Pour volets avec commande bouton poussoir
    - Activation brève du relais
    
@@ -22,10 +22,14 @@ L'intégration propose maintenant deux modes de fonctionnement :
 
 **Bonne nouvelle !** Si vous ne faites rien, votre configuration existante continuera de fonctionner avec les valeurs par défaut :
 - Mode : Impulsion courte
-- Durée impulsion courte : 0.5 seconde
+- Durée impulsion courte : 500 ms
 - Durée maintenu : 30 secondes
 
-Votre paramètre "Temps de course" existant est conservé.
+ℹ️ **Paramètre "Temps de course" retiré** : ce champ n'était en réalité jamais utilisé par l'intégration (aucun calcul de position n'en dépendait) et a été retiré du formulaire. Aucune action requise si vous l'aviez configuré : il est simplement ignoré.
+
+ℹ️ **Unité de la durée d'impulsion courte** : ce champ est désormais exprimé en millisecondes (50 à 600 ms) plutôt qu'en secondes. Si votre configuration existante stockait encore une valeur en secondes (ex: 0.5), elle est automatiquement convertie en millisecondes (500 ms) à l'ouverture de l'intégration — aucune action requise.
+
+ℹ️ **Formulaire en deux étapes** : lors de la configuration ou de la modification des options, seul le champ de durée correspondant au mode d'impulsion choisi s'affiche désormais (plus besoin de voir "Durée impulsion courte" quand vous êtes en mode Maintenu, et inversement).
 
 ## Mettre à jour votre configuration
 

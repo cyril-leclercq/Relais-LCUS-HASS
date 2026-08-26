@@ -6,15 +6,15 @@ L'intégration Volet Roulant Relais USB propose deux modes de fonctionnement pou
 
 ## Les Deux Modes
 
-### ⚡ Mode Impulsion Courte (0.2 - 1 seconde)
+### ⚡ Mode Impulsion Courte (50 - 600 ms)
 
 **Utilisation recommandée :** Volets motorisés avec électronique de contrôle intégrée.
 
 Ce mode active le relais très brièvement, simulant un appui sur un bouton poussoir. C'est l'équivalent d'une impulsion électrique courte.
 
 **Caractéristiques :**
-- Durée réglable : 0.2 à 1 seconde
-- Valeur par défaut : 0.5 seconde
+- Durée réglable : 50 à 600 millisecondes
+- Valeur par défaut : 500 ms
 - Le relais s'active puis se désactive automatiquement après la durée configurée
 
 **Cas d'usage typiques :**
@@ -61,10 +61,10 @@ Ce mode garde le relais activé pendant toute la durée configurée, fournissant
    - **Nom** : Nom de votre volet (ex: "Volet Salon")
    - **Port USB** : Port série du module relais (ex: /dev/ttyUSB0)
    - **Mode d'impulsion** : Choisissez entre "Impulsion courte" ou "Maintenu"
-   - **Durée impulsion courte** : Réglez la durée (si mode impulsion courte)
-   - **Durée maintenu** : Réglez la durée (si mode maintenu)
-   - **Temps de course total** : Temps estimé pour une course complète
    - **Inverser le sens** : Cochez si montée/descente sont inversés
+5. À l'étape suivante, seul le champ de durée correspondant au mode choisi s'affiche :
+   - **Durée impulsion courte (ms)** si vous avez choisi "Impulsion courte"
+   - **Durée maintenu (secondes)** si vous avez choisi "Maintenu"
 
 ### Modification des paramètres
 
@@ -96,9 +96,9 @@ Les modifications sont appliquées immédiatement après le rechargement de l'in
 
 Commencez par une valeur basse et augmentez progressivement :
 
-1. **0.2 seconde** : Pour les systèmes très réactifs
-2. **0.5 seconde** : Valeur recommandée par défaut
-3. **1.0 seconde** : Si le système nécessite une impulsion plus longue
+1. **50 ms** : Pour les systèmes très réactifs
+2. **500 ms** : Valeur recommandée par défaut
+3. **600 ms** : Si le système nécessite une impulsion plus longue
 
 **Test :** Après chaque changement, testez l'ouverture et la fermeture. Si le volet ne réagit pas, augmentez légèrement la durée.
 
@@ -112,20 +112,11 @@ La durée doit correspondre au temps nécessaire pour une course complète :
 
 **Exemple :** Si votre volet met 28 secondes à se fermer complètement, configurez 30 secondes.
 
-## Paramètre "Temps de course total"
-
-Ce paramètre est utilisé pour :
-- Estimer la position du volet
-- Calculer les mouvements partiels
-- Optimiser les temps de réponse
-
-**Conseil :** Mesurez précisément le temps de course complet pour une meilleure précision.
-
 ## Dépannage
 
 ### Le volet ne réagit pas aux commandes
 - ✔️ Vérifiez que le bon mode est sélectionné
-- ✔️ En mode impulsion courte : augmentez la durée (0.5s → 1s)
+- ✔️ En mode impulsion courte : augmentez la durée (500 ms → 600 ms)
 - ✔️ Vérifiez le câblage et les connexions du relais
 
 ### Le volet ne s'arrête pas en fin de course
@@ -149,23 +140,27 @@ Ce paramètre est utilisé pour :
 ### Configuration 1 : Volet moderne avec moteur radio
 ```
 Mode : Impulsion courte
-Durée impulsion courte : 0.5 seconde
-Temps de course total : 25 secondes
+Durée impulsion courte : 500 ms
 ```
 
 ### Configuration 2 : Volet ancien sans fin de course
 ```
 Mode : Maintenu
 Durée maintenu : 35 secondes
-Temps de course total : 35 secondes
 ```
 
 ### Configuration 3 : Store banne motorisé
 ```
 Mode : Impulsion courte
-Durée impulsion courte : 0.7 seconde
-Temps de course total : 40 secondes
+Durée impulsion courte : 600 ms
 ```
+
+### Configuration 4 : Volet radio via émetteur Somfy IZYMO io (réf. 5135163)
+```
+Mode : Impulsion courte
+Durée impulsion courte : 500 ms
+```
+Voir le guide dédié : [SOMFY_IZYMO.md](SOMFY_IZYMO.md)
 
 ## Support
 

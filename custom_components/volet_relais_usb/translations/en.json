@@ -3,21 +3,35 @@
     "step": {
       "user": {
         "title": "USB Relay Roller Shutter",
-        "description": "Configure your USB relay controlled roller shutter.\n\n**Short Pulse Mode** ⚡\nActivates the relay briefly (0.2-1s), like a push button. Ideal for motorized shutters with built-in control electronics.\n\n**Sustained Mode** ⏱️\nKeeps the relay active for the entire duration (2s-2min). For shutters requiring continuous power during movement.",
+        "description": "Configure your USB relay controlled roller shutter.\n\n**Short Pulse Mode** ⚡\nActivates the relay briefly (50-600 ms), like a push button. Ideal for motorized shutters with built-in control electronics.\n\n**Sustained Mode** ⏱️\nKeeps the relay active for the entire duration (2s-2min). For shutters requiring continuous power during movement.\n\nThe exact duration for the chosen mode will be asked in the next step.",
         "data": {
           "name": "Name",
           "port": "USB Serial Port (e.g., /dev/ttyUSB0)",
           "pulse_mode": "Pulse mode",
-          "short_pulse_duration": "Short pulse duration (seconds)",
-          "long_pulse_duration": "Sustained duration (seconds)",
-          "travel_time": "Total travel time (seconds)",
           "invert_relay": "Invert relay direction (up/down)"
         },
         "data_description": {
-          "pulse_mode": "Choose the relay operating mode",
-          "short_pulse_duration": "Short signal duration (0.2 to 1 second)",
-          "long_pulse_duration": "Extended activation duration (2 seconds to 2 minutes)",
-          "travel_time": "Estimated time for a complete shutter run"
+          "pulse_mode": "Choose the relay operating mode"
+        }
+      },
+      "pulse_short": {
+        "title": "Short pulse duration",
+        "description": "Set the pulse duration, like a brief press on a push button.",
+        "data": {
+          "short_pulse_duration": "Short pulse duration (ms)"
+        },
+        "data_description": {
+          "short_pulse_duration": "Short signal duration (50 to 600 milliseconds)"
+        }
+      },
+      "pulse_long": {
+        "title": "Sustained duration",
+        "description": "Set how long the relay stays continuously active.",
+        "data": {
+          "long_pulse_duration": "Sustained duration (seconds)"
+        },
+        "data_description": {
+          "long_pulse_duration": "Extended activation duration (2 seconds to 2 minutes)"
         }
       }
     },
@@ -32,19 +46,33 @@
     "step": {
       "init": {
         "title": "Roller shutter options",
-        "description": "Modify your roller shutter settings.\n\n**Short Pulse Mode** ⚡\nActivates the relay briefly (0.2-1s), like a push button. Ideal for motorized shutters with built-in control electronics.\n\n**Sustained Mode** ⏱️\nKeeps the relay active for the entire duration (2s-2min). For shutters requiring continuous power during movement.",
+        "description": "Modify your roller shutter settings.\n\n**Short Pulse Mode** ⚡\nActivates the relay briefly (50-600 ms), like a push button. Ideal for motorized shutters with built-in control electronics.\n\n**Sustained Mode** ⏱️\nKeeps the relay active for the entire duration (2s-2min). For shutters requiring continuous power during movement.\n\nThe exact duration for the chosen mode will be asked in the next step.",
         "data": {
           "pulse_mode": "Pulse mode",
-          "short_pulse_duration": "Short pulse duration (seconds)",
-          "long_pulse_duration": "Sustained duration (seconds)",
-          "travel_time": "Total travel time (seconds)",
           "invert_relay": "Invert relay direction (up/down)"
         },
         "data_description": {
-          "pulse_mode": "Choose the relay operating mode",
-          "short_pulse_duration": "Short signal duration (0.2 to 1 second)",
-          "long_pulse_duration": "Extended activation duration (2 seconds to 2 minutes)",
-          "travel_time": "Estimated time for a complete shutter run"
+          "pulse_mode": "Choose the relay operating mode"
+        }
+      },
+      "pulse_short": {
+        "title": "Short pulse duration",
+        "description": "Set the pulse duration, like a brief press on a push button.",
+        "data": {
+          "short_pulse_duration": "Short pulse duration (ms)"
+        },
+        "data_description": {
+          "short_pulse_duration": "Short signal duration (50 to 600 milliseconds)"
+        }
+      },
+      "pulse_long": {
+        "title": "Sustained duration",
+        "description": "Set how long the relay stays continuously active.",
+        "data": {
+          "long_pulse_duration": "Sustained duration (seconds)"
+        },
+        "data_description": {
+          "long_pulse_duration": "Extended activation duration (2 seconds to 2 minutes)"
         }
       }
     }

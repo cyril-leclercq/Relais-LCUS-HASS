@@ -14,6 +14,8 @@ Ce dossier contient la documentation technique détaillée du projet.
 - **[DOCKER_SETUP.md](DOCKER_SETUP.md)** - Configuration Docker/Swarm complète
 - **[CONFIGURATION_USB.md](CONFIGURATION_USB.md)** - Configuration port USB multi-plateformes
 - **[DETECTION_MODULE_LINUX.md](DETECTION_MODULE_LINUX.md)** - Détection module LCUS sur Linux
+- **[MODE_IMPULSION.md](MODE_IMPULSION.md)** - Mode impulsion courte vs mode maintenu
+- **[SOMFY_IZYMO.md](SOMFY_IZYMO.md)** - Utilisation avec un émetteur Somfy IZYMO io (réf. 5135163)
 - **[info.md](info.md)** - Métadonnées HACS
 
 ### Pour les développeurs

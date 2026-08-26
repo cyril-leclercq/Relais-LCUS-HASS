@@ -9,7 +9,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### Ajouté
 - ⚡ **Mode d'impulsion configurable**
-  - Mode "Impulsion courte" (0.2-1s) pour commandes momentanées
+  - Mode "Impulsion courte" (50-600 ms) pour commandes momentanées
   - Mode "Maintenu" (2s-2min) pour course complète du volet
   - Sliders de configuration pour ajuster les durées
   - UI professionnelle avec descriptions détaillées
@@ -18,6 +18,25 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   - Guide de migration pour utilisateurs existants (MIGRATION_MODE_IMPULSION.md)
   - Paramètres identiques en installation et configuration
   - Support des traductions FR/EN
+
+### Corrigé
+- 🛑 **Arrêt réel du volet en mode Impulsion courte**
+  - `stop_cover` renvoie désormais une impulsion sur le canal actif (montée ou descente) au lieu de simplement couper un relais déjà retombé
+  - Corrige l'arrêt en cours de course pour les moteurs qui s'arrêtent par un nouvel appui sur le bouton déjà actif
+  - Nécessaire pour les scripts de type "position intermédiaire" (`delay` + `cover.stop_cover`) en mode Impulsion courte
+  - `is_opening`/`is_closing` reflètent maintenant le mouvement réel (le volet est considéré en mouvement jusqu'à l'arrêt effectif, pas seulement pendant la durée de l'impulsion)
+
+### Modifié
+- 🎛️ **Formulaire de configuration en plusieurs étapes**
+  - Le champ de durée n'affiche désormais que l'option pertinente pour le mode d'impulsion choisi (plus de "Durée impulsion courte" visible en mode Maintenu, et inversement) — que ce soit à l'installation initiale ou via **Configurer** dans les options
+- ⏱️ **Durée d'impulsion courte exprimée en millisecondes**
+  - Plage réduite et plus précise : 50 à 600 ms (au lieu de 0.2 à 1 seconde), valeur par défaut inchangée (500 ms)
+  - Les configurations existantes (stockées en secondes) sont automatiquement converties en millisecondes à la volée, sans action requise
+
+### Supprimé
+- 🗑️ **Paramètre "Temps de course total"**
+  - Retiré du formulaire de configuration et des options : il n'était jamais lu par le code (aucun calcul de position n'en dépendait)
+  - Les configurations existantes qui le contenaient continuent de fonctionner normalement, la valeur est simplement ignorée
 
 ### À venir
 - Support de plusieurs volets (instances multiples)

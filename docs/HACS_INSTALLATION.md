@@ -65,9 +65,8 @@ Remplissez le formulaire :
   - Linux : `/dev/ttyUSB0` ou `/dev/volet_relais` (si règle udev)
   - macOS : `/dev/tty.usbserial-1110`
   - Windows : `COM3`
-- **Temps de course** : Durée en secondes pour ouvrir/fermer complètement
-  - Mesurez le temps réel et ajoutez une petite marge
-  - Exemple : 28 secondes
+- **Mode d'impulsion** : "Impulsion courte" ou "Maintenu"
+  - La durée précise (impulsion en ms, ou maintien en secondes) est demandée à l'étape suivante, selon le mode choisi — voir [MODE_IMPULSION.md](MODE_IMPULSION.md)
 
 ### Étape 3 : Vérifier
 
@@ -208,7 +207,7 @@ script:
    - Paramètres → Appareils et services
    - Trouvez "Volet Roulant Relais USB"
    - Cliquez sur **Configurer**
-   - Ajustez le **Temps de course**
+   - En mode Maintenu, ajustez la **Durée maintenu** ; en mode Impulsion courte, voir [MODE_IMPULSION.md](MODE_IMPULSION.md) pour affiner le réglage
 
 ---
 
@@ -305,7 +304,7 @@ rm -rf temp
 - [ ] Home Assistant redémarré
 - [ ] Intégration ajoutée via l'UI
 - [ ] Port série configuré correctement
-- [ ] Temps de course mesuré et configuré
+- [ ] Mode d'impulsion et durée configurés
 - [ ] Test d'ouverture réussi
 - [ ] Test de fermeture réussi
 - [ ] Test d'arrêt réussi
